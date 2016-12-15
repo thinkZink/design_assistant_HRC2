@@ -112,3 +112,6 @@ tmp/
 *.bak
 *.swp
 *~.nib
+
+# Mac stuff
+.DS_Store
