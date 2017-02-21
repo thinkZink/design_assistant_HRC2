@@ -23,11 +23,14 @@
 */
 
 import java.awt.*;
+
 import java.awt.geom.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
+
+import StudentGroups.AssignGroups;
 import TUIO.*;
 import rbsa.eoss.Architecture;
 import rbsa.eoss.ArchitectureEvaluator;
@@ -36,6 +39,10 @@ import rbsa.eoss.Result;
 import rbsa.eoss.ResultManager;
 import rbsa.eoss.local.Params;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 public class TuioDemoComponent extends JComponent implements TuioListener {
 
 	private Hashtable<Long,TuioDemoObject> objectList = new Hashtable<Long,TuioDemoObject>();
@@ -53,9 +60,10 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public static int width, height;
 	private float scale = 1.0f;
 	public boolean verbose = false;
-	
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
+	
+	private static final double changeEpsilon = 1e-3;
 	
 	public TuioDemoComponent() {
 		super();
@@ -63,10 +71,27 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		window = new JFrame();
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    window.setBounds(30, 30, 500, 500);
-	    window.getContentPane().add(new MyGraph(50, 50));
-	    window.getContentPane().setBackground(Color.CYAN);
+	    MyGraph initialGraph = new MyGraph(50, 50);
+	    
+	    
+	    window.getContentPane().add(initialGraph);
+	    window.getContentPane().setBackground(Color.WHITE);
 	    window.setVisible(true);
-	   
+		
+	}
+	public TuioDemoComponent(String preDataPath) {
+		super();
+		
+		window = new JFrame();
+	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    window.setBounds(30, 30, 500, 500);
+	    MyGraph initialGraph = new MyGraph(50, 50);
+	    
+	    
+	    window.getContentPane().add(initialGraph);
+	    window.getContentPane().setBackground(Color.WHITE);
+	    window.setVisible(true);
+	    plotInitialData(preDataPath);
 		
 	}
 	
@@ -219,9 +244,10 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		}
 		
 
-		
+		Orbit [] orbits = new Orbit[5];
+		TuioDemoObject tobj = null;
 		while (objects.hasMoreElements()) {
-			TuioDemoObject tobj = objects.nextElement();
+			tobj = objects.nextElement();
 			if (tobj!=null) { 
 				
 				tobj.paint(g2, width,height);
@@ -246,7 +272,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				else 
 					markers[0].add(tobj);
 
-				Orbit [] orbits = new Orbit[5];				
+				orbits = new Orbit[5];				
 
 				for (int i=0; i<orbits.length; i++) {
 					orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
@@ -260,11 +286,11 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				g2.drawString(orbits[1].fancyString(), 20, 302);
 				g2.drawString(orbits[0].fancyString(), 20, 398);
 				
-				evaluateArchitecture(orbits);
+				
 
 			}
 		}
-		
+		if (tobj!=null) evaluateArchitecture(orbits);
 		
 		
 	}
@@ -272,7 +298,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public void init () {
 	      
         // Set a path to the project folder
-        String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
+        String path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
         
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
@@ -282,13 +308,69 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
         AE.init(1);
 	}
 	
-	private double[] evaluateArchitecture(Orbit [] orbits) {
+	private ArrayList<double[]> getInitialData(String filename){
+		ArrayList<double[]> initialData = new ArrayList<double[]>();
+		String row = "";
+		BufferedReader br = null;
+	    try {
+	           br = new BufferedReader(new FileReader(filename));
+	           row = br.readLine(); //strip column headers
+	            while ((row = br.readLine()) != null) {
+	                String[] rawInstance = row.split(",");
+	                double[] dataPair = {Double.parseDouble(rawInstance[1])*1000+25,Double.parseDouble(rawInstance[2])/10};
+	                initialData.add(dataPair);
+	            }
 
+	        } catch (FileNotFoundException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        } finally {
+	            if (br != null) {
+	                try {
+	                    br.close();
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    return initialData;
+	}
+	
+	private void plotInitialData(String filename){
+		ArrayList<double[]> data = getInitialData(filename);
+		BackgroundGraph preDataGraph = new BackgroundGraph(data);
+		window.getContentPane().add(preDataGraph);
+		window.setVisible(true);
+		/*for(int i=0; i<data.size(); i++){
+			MyGraph preDataGraph = new MyGraph(data.get(i)[0]*1000+25,data.get(i)[1]/10.0);
+			preDataGraph.clearLatest();
+	        window.getContentPane().add(preDataGraph);
+	        window.setVisible(true);
+		}
+		*/
+		
+	}
+	
+	private void evaluateTeams(Orbit[] orbits) {
+		ArrayList<Integer>[] input_teams = new ArrayList[5];
+		
+		for (int i = 0; i < 5; i++) {
+			input_teams[i] = orbits[i].getIDs();
+		}
+		
+		StudentGroups.Point p = AssignGroups.getPoint(input_teams);
+		science = p.happiness;
+		cost = p.productivity;
+	}
+	
+	private double[] evaluateArchitecture(Orbit [] orbits) {
+		System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();
 			for (Orbit o : orbits) {
 				input_arch.add(o.toString());
 			}
-			
+			System.out.println(input_arch);
 	        // Generate a new architecture
 	        Architecture architecture = AG.defineNewArch(input_arch);
 	        
@@ -296,13 +378,26 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        Result result = AE.evaluateArchitecture(architecture,"Slow");
 	        
 	        // Save the score and the cost
-	        cost = result.getCost();
-	        science = result.getScience();
+	        double newCost = result.getCost();
+	        double newScience = result.getScience();
+	        if(Math.abs(newCost-cost) + Math.abs(newScience-science) > changeEpsilon){
+	        	System.out.println("Changing color");
+	        	int numComponents = window.getContentPane().getComponentCount();
+	        	MyGraph lastGraph = (MyGraph)window.getContentPane().getComponent(0);
+	        	lastGraph.clearLatest();
+	        	MyGraph updatedGraph = new MyGraph(newScience*1000+25,newCost/10.0);
+		        window.getContentPane().add(updatedGraph,0);
+		        //window.getContentPane().getComponent(numComponents-1).repaint();
+		        //window.getContentPane().getComponent(numComponents).repaint();
+		        window.setVisible(true);
+	        }
+	        cost = newCost;
+	        science = newScience;
+		    //System.out.println("Graph");
+	        //System.out.println("Xprev "+lastGraph.x+" Yprev "+lastGraph.y);
 	        
-	        window.getContentPane().add(new MyGraph(science*1000+25, cost));
 	        
-	        window.repaint();
-	        window.setVisible(true);
+	        
 	        System.out.println("Performance Score: " + science + ", Cost: " + cost);
 	        return new double [] {cost, science};
 	        
@@ -317,12 +412,21 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			this.name = name;
 			this.markers = markers;
 		}
-
+		
+		public ArrayList<Integer> getIDs() {
+			ArrayList<Integer> IDs = new ArrayList<Integer>();
+			for (int i = 0; i < markers.size(); i++) {
+				IDs.add(markers.get(i).getSymbolID());
+			}
+			return IDs;
+		}
+		
 		public String toString () {
 			String rs = "";
 
 			for (TuioDemoObject e : markers)
 				rs = rs + e.toTuioLetter();	
+			
 			
 			return rs.trim();
 		}

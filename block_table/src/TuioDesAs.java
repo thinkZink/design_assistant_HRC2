@@ -44,7 +44,8 @@ public class TuioDesAs  {
 	private Cursor invisibleCursor;
 	
 	public TuioDesAs() {
-		demo = new TuioDemoComponent();
+		String preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
+		demo = new TuioDemoComponent(preDataPath);
 		demo.init();
 		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		invisibleCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "invisible cursor");
