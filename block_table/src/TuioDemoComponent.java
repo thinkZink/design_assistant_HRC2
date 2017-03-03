@@ -63,6 +63,12 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
 	
+	private final int xMin = 85;
+	private final int xMax = 1285; //4000x (0,0.281)
+	private final int yMin = 25;
+	private final int yMax = 825; //(1/12)x (0,9981)
+	private final double xScale = 4000;
+	private final double yScale = 1/12.0;
 	private static final double changeEpsilon = 1e-3;
 	
 	public TuioDemoComponent() {
@@ -70,8 +76,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		
 		window = new JFrame();
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    window.setBounds(30, 30, 500, 500);
-	    MyGraph initialGraph = new MyGraph(50, 50);
+	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
+	    GraphCoordinates initialGraph = new GraphCoordinates(xMin,xMax,yMin,yMax,xScale,yScale);
 	    
 	    
 	    window.getContentPane().add(initialGraph);
@@ -84,8 +90,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		
 		window = new JFrame();
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    window.setBounds(30, 30, 500, 500);
-	    MyGraph initialGraph = new MyGraph(50, 50);
+	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
+	    GraphCoordinates initialGraph = new GraphCoordinates(xMin, xMax, yMin, yMax, xScale, yScale);
 	    
 	    
 	    window.getContentPane().add(initialGraph);
@@ -317,7 +323,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	           row = br.readLine(); //strip column headers
 	            while ((row = br.readLine()) != null) {
 	                String[] rawInstance = row.split(",");
-	                double[] dataPair = {Double.parseDouble(rawInstance[1])*1000+25,Double.parseDouble(rawInstance[2])/10};
+	                double[] dataPair = {Double.parseDouble(rawInstance[1])*4000,Double.parseDouble(rawInstance[2])/12};
 	                initialData.add(dataPair);
 	            }
 
@@ -339,7 +345,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	
 	private void plotInitialData(String filename){
 		ArrayList<double[]> data = getInitialData(filename);
-		BackgroundGraph preDataGraph = new BackgroundGraph(data);
+		GraphBackground preDataGraph = new GraphBackground(data,this.xMin, this.xMax,this.yMin,this.yMax);
 		window.getContentPane().add(preDataGraph);
 		window.setVisible(true);
 		/*for(int i=0; i<data.size(); i++){
@@ -383,9 +389,11 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        if(Math.abs(newCost-cost) + Math.abs(newScience-science) > changeEpsilon){
 	        	System.out.println("Changing color");
 	        	int numComponents = window.getContentPane().getComponentCount();
-	        	MyGraph lastGraph = (MyGraph)window.getContentPane().getComponent(0);
-	        	lastGraph.clearLatest();
-	        	MyGraph updatedGraph = new MyGraph(newScience*1000+25,newCost/10.0);
+	        	if(numComponents>2){ //2 is the number of non-point components (background + coordinates) come up with a better way
+	        		GraphPoint lastGraph = (GraphPoint)window.getContentPane().getComponent(0);
+	        		lastGraph.clearLatest();
+	        	}
+	        	GraphPoint updatedGraph = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax);
 		        window.getContentPane().add(updatedGraph,0);
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();
