@@ -53,6 +53,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public static final int object_size = 60;
 	public static final int table_size = 760;
 	
+	public static int pointCounter = 0;
+	
 	public JFrame window;
 	public double cost = 0;
 	public double science = 0;
@@ -388,13 +390,15 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        double newScience = result.getScience();
 	        if(Math.abs(newCost-cost) + Math.abs(newScience-science) > changeEpsilon){
 	        	System.out.println("Changing color");
-	        	int numComponents = window.getContentPane().getComponentCount();
-	        	if(numComponents>2){ //2 is the number of non-point components (background + coordinates) come up with a better way
-	        		GraphPoint lastGraph = (GraphPoint)window.getContentPane().getComponent(0);
-	        		lastGraph.clearLatest();
-	        	}
-	        	GraphPoint updatedGraph = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax);
-		        window.getContentPane().add(updatedGraph,0);
+	        	//int numComponents = window.getContentPane().getComponentCount();
+	        	//if(numComponents>2){ //2 is the number of non-point components (background + coordinates) come up with a better way
+	        	//	GraphPoint lastGraph = (GraphPoint)window.getContentPane().getComponent(0);
+	        	//	lastGraph.clearLatest();
+	        	//}
+	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter);
+	        	
+		        window.getContentPane().add(newPoint,0);
+		        
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();
 		        window.setVisible(true);
