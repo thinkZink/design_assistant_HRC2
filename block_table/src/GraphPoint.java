@@ -39,8 +39,11 @@ class GraphPoint extends JComponent {
 		//if this is the most recent point, make it red.
 		System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
 		if(index==TuioDemoComponent.pointCounter){
-			g.setColor(Color.getHSBColor(0.56f, 1.0f, 0.8f));
-			size = 2*diameter;
+			g.setColor(Color.getHSBColor(1.0f, 1.0f, 1.0f));
+			size = (int)1.5*diameter;
+		}
+		else{
+			g.setColor(Color.getHSBColor(0.5f,(float)index/TuioDemoComponent.pointCounter, 1-(float)index/TuioDemoComponent.pointCounter));
 		}
 		g.fillOval(xMin+x, yMax-yMin-y, size,size);	  
 	}
