@@ -30,7 +30,7 @@ import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
 
-import StudentGroups.AssignGroups;
+//import StudentGroups.AssignGroups;
 import TUIO.*;
 import rbsa.eoss.Architecture;
 import rbsa.eoss.ArchitectureEvaluator;
@@ -304,7 +304,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public void init () {
 	      
         // Set a path to the project folder
-        String path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
+        String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
         
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
@@ -357,7 +357,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		*/
 		
 	}
-	
+	/*
 	private void evaluateTeams(Orbit[] orbits) {
 		ArrayList<Integer>[] input_teams = new ArrayList[5];
 		
@@ -368,7 +368,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		StudentGroups.Point p = AssignGroups.getPoint(input_teams);
 		science = p.happiness;
 		cost = p.productivity;
-	}
+	}*/
 	
 	private double[] evaluateArchitecture(Orbit [] orbits) {
 		System.out.println(orbits[0]);
