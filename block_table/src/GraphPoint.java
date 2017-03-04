@@ -4,18 +4,20 @@ import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+
 class GraphPoint extends JComponent {
 	int x;
 	int y;
-	boolean latest = true;
+	int index = 0;
 	int diameter = 8;
 	int xMin;
 	int xMax;
 	int yMax;
 	int yMin;
+	TuioDemoComponent.Orbit [] configuration;
 	
 
-	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax) {
+	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TuioDemoComponent.Orbit[] orbits,int index) {
 	//xPrev and yPrev are static. will this work?
 	
 	
@@ -25,14 +27,19 @@ class GraphPoint extends JComponent {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
+		this.index = index;
 		
 	}
 	public void paint(Graphics g) {
 		System.out.println("Painting");
 		g.setColor(Color.blue);
 		int size = diameter;
-		if(latest){
-			g.setColor(Color.red);
+		//compare the current point index to a static variable
+		//in the demoComponent that tracks how many points there are
+		//if this is the most recent point, make it red.
+		System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
+		if(index==TuioDemoComponent.pointCounter){
+			g.setColor(Color.getHSBColor(0.56f, 1.0f, 0.8f));
 			size = 2*diameter;
 		}
 		g.fillOval(xMin+x, yMax-yMin-y, size,size);	  
@@ -40,7 +47,7 @@ class GraphPoint extends JComponent {
 
 
 	public void clearLatest(){
-		latest = false;
+		//do nothing for now
 	}
 }
 
