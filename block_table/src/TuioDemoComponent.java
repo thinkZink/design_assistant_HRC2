@@ -72,6 +72,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private final double xScale = 4000;
 	private final double yScale = 1/12.0;
 	private static final double changeEpsilon = 1e-3;
+	private MouseAdapter mouseAdapt = new PointMouseAdapter();
 	
 	public TuioDemoComponent() {
 		super();
@@ -397,7 +398,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        	//}
 	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter);
 	        	
+	        	
 		        window.getContentPane().add(newPoint,0);
+		        newPoint.addMouseListener(mouseAdapt);
 		        
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();
