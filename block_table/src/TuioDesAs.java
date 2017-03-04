@@ -44,7 +44,7 @@ public class TuioDesAs  {
 	private Cursor invisibleCursor;
 	
 	public TuioDesAs() {
-		String preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
+		String preDataPath = "/Users/Nikhil/Desktop/git_repo/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		demo = new TuioDemoComponent(preDataPath);
 		demo.init();
 		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();

@@ -30,7 +30,7 @@ import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
 
-import StudentGroups.AssignGroups;
+//import StudentGroups.AssignGroups;
 import TUIO.*;
 import rbsa.eoss.Architecture;
 import rbsa.eoss.ArchitectureEvaluator;
@@ -72,6 +72,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private final double xScale = 4000;
 	private final double yScale = 1/12.0;
 	private static final double changeEpsilon = 1e-3;
+	private MouseAdapter mouseAdapt = new PointMouseAdapter();
 	
 	public TuioDemoComponent() {
 		super();
@@ -306,7 +307,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public void init () {
 	      
         // Set a path to the project folder
-        String path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
+        String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
         
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
@@ -359,7 +360,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		*/
 		
 	}
-	
+	/*
 	private void evaluateTeams(Orbit[] orbits) {
 		ArrayList<Integer>[] input_teams = new ArrayList[5];
 		
@@ -370,7 +371,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		StudentGroups.Point p = AssignGroups.getPoint(input_teams);
 		science = p.happiness;
 		cost = p.productivity;
-	}
+	}*/
 	
 	private double[] evaluateArchitecture(Orbit [] orbits) {
 		System.out.println(orbits[0]);
@@ -397,7 +398,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        	//}
 	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter);
 	        	
+	        	
 		        window.getContentPane().add(newPoint,0);
+		        newPoint.addMouseListener(mouseAdapt);
 		        
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();
