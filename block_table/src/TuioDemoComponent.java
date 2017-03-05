@@ -73,6 +73,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private final double yScale = 1/12.0;
 	private static final double changeEpsilon = 1e-3;
 	private MouseAdapter mouseAdapt = new PointMouseAdapter();
+	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
 	
 	public TuioDemoComponent() {
 		super();
@@ -81,7 +82,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
 	    GraphCoordinates initialGraph = new GraphCoordinates(xMin,xMax,yMin,yMax,xScale,yScale);
-	    
+	    initialGraph.addMouseListener(mouseAdapt);
 	    
 	    window.getContentPane().add(initialGraph);
 	    window.getContentPane().setBackground(Color.WHITE);
@@ -95,9 +96,10 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
 	    GraphCoordinates initialGraph = new GraphCoordinates(xMin, xMax, yMin, yMax, xScale, yScale);
-	    
+	    initialGraph.addMouseListener(mouseAdapt);
 	    
 	    window.getContentPane().add(initialGraph);
+	    
 	    window.getContentPane().setBackground(Color.WHITE);
 	    window.setVisible(true);
 	    plotInitialData(preDataPath);
@@ -308,6 +310,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	      
         // Set a path to the project folder
         String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
+        path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
         
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
@@ -398,9 +401,16 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        	//}
 	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter);
 	        	
-	        	
+	        	Container cp = window.getContentPane();
 		        window.getContentPane().add(newPoint,0);
-		        newPoint.addMouseListener(mouseAdapt);
+		        int [] bounds = newPoint.getBoundaries();
+		        for(int i=bounds[0]; i<bounds[0]+bounds[2]; i++){
+		        	for(int j=bounds[1]; j<bounds[1]+bounds[2]; j++){
+		        		HashMap<String,GraphPoint> debugmap = pixelMap;
+		        		pixelMap.put(String.format("%d%d",i,j), newPoint);
+		        	}
+		        }
+		        
 		        
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();

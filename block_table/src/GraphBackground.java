@@ -20,9 +20,10 @@ public class GraphBackground extends JComponent {
 		this.yMax = yMax;
 	}
 	public void paint(Graphics g) {
+		
 		g.setColor(Color.gray);
 		for(int i=0; i<data.size(); i++){
-			g.fillOval(xMin+(int)data.get(i)[0], yMax-yMin-(int)data.get(i)[1], 5,5);	  
+			g.fillRect(xMin+(int)data.get(i)[0], yMax-yMin-(int)data.get(i)[1], 5,5);	  
 		}
 	}
 

@@ -14,6 +14,7 @@ class GraphCoordinates extends JComponent {
 	int numTicks = 10;
 	int xTickWidth;
 	int yTickWidth;
+
 	
 	public GraphCoordinates(int xMin, int xMax, int yMin, int yMax, double xScale, double yScale) {
 		this.xMin = xMin;
@@ -26,6 +27,7 @@ class GraphCoordinates extends JComponent {
 		this.yTickWidth = (int)((this.yMax-this.yMin)/this.numTicks); 
 	}
 	public void paint(Graphics g) {
+
 		System.out.println("Painting Coordinates");
 		g.setColor(Color.black);
 		g.drawLine(xMin, yMin, xMin, yMax); //y axis
@@ -41,6 +43,7 @@ class GraphCoordinates extends JComponent {
 			g.drawLine(xMin+5, yTick, xMin-5, yTick);
 			g.drawString(String.format("%d",(int)(1/yScale)*(yMax-yTick)),xMin-45,yTick+5);
 		}
+
 		
 		
 	}
