@@ -61,6 +61,23 @@ public class TuioDemoObject extends TuioObject {
 		g.setPaint(Color.white);
 		g.drawString(toTuioLetter()+"",Xpos-10,Ypos);
 	}
+	
+	public void paintColor(Graphics2D g, int width, int height, Paint p) {
+		
+		float Xpos = xpos*width;
+		float Ypos = ypos*height;
+		float scale = height/(float)TuioDemoComponent.table_size;
+
+		AffineTransform trans = new AffineTransform();
+		trans.translate(-xpos,-ypos);
+		trans.translate(Xpos,Ypos);
+		trans.scale(scale,scale);
+		Shape s = trans.createTransformedShape(square);
+		g.setPaint(p);
+		g.fill(s);
+		g.setPaint(Color.white);
+		g.drawString(toTuioLetter()+"",Xpos-10,Ypos);
+	}
 
 	public void update(TuioObject tobj) {
 		

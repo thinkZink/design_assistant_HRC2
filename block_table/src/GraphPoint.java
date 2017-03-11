@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.util.Enumeration;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,10 +25,10 @@ class GraphPoint extends JComponent {
 	int yMax;
 	int yMin;
 	TuioDemoComponent.Orbit [] configuration;
-	Enumeration<TuioDemoObject> objects;
+	ArrayList<TuioDemoObject> objectList;
 	
 
-	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TuioDemoComponent.Orbit[] orbits,int index) {
+	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TuioDemoComponent.Orbit[] orbits,int index, ArrayList<TuioDemoObject> objectList) {
 	//xPrev and yPrev are static. will this work?
 	
 		this.dim1 = x;
@@ -42,6 +42,7 @@ class GraphPoint extends JComponent {
 		this.yMax = yMax;
 		this.configuration = orbits;
 		this.index = index;
+		this.objectList = objectList;
 //		setLocation(this.xplot-this.diameter/2,this.yplot-this.diameter/2);
 //		Dimension d = new Dimension(this.diameter,this.diameter);
 //		setMaximumSize(d);

@@ -92,18 +92,15 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.getContentPane().add(initialGraph);
 	    window.getContentPane().setBackground(Color.WHITE);
 	    window.setVisible(true);
-	    
+	    /*
 	    pc_window = new JFrame();
 	    pc_window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
-	    if (lastSelectedPoint != null) {
-	    	HistoryWindow hw = new HistoryWindow(lastSelectedPoint.objects, 640, 480, pc_window);
-	    	pc_window.getContentPane().add(hw);
-	    }
+	   
 	    pc_window.setBounds(xMin+5, yMin+5, 640, 480);
 	    pc_window.getContentPane().setBackground(Color.WHITE);
 	    pc_window.setVisible(true);
-	    
+	    */
 	    
 	    
 		
@@ -267,7 +264,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 
 		// draw the objects and print orbits
 		Enumeration<TuioDemoObject> objects = objectList.elements();
-		
+		ArrayList<TuioDemoObject> objectList = new ArrayList<TuioDemoObject>();
 		ArrayList<TuioDemoObject> [] markers = new ArrayList[5];
 		for (int i=0; i<markers.length; i++) {
 			markers[i] = new ArrayList<TuioDemoObject>(); 
@@ -279,7 +276,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		while (objects.hasMoreElements()) {
 			tobj = objects.nextElement();
 			if (tobj!=null) { 
-				
+				objectList.add(tobj);
 				tobj.paint(g2, width,height);
 				
 				/*Sorting objects into orbits*/
@@ -301,12 +298,6 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				
 				else 
 					markers[0].add(tobj);
-
-
-				
-				
-				
-
 			}
 		}
 		orbits = new Orbit[5];				
@@ -334,11 +325,19 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				g2.drawString("Selected "+selectedOrbits[1].fancyString(), 400, 302);
 				g2.drawString("Selected "+selectedOrbits[0].fancyString(), 400, 398);
 				
+				
+				for (TuioDemoObject tobj2: lastSelectedPoint.objectList) {
+					
+					if (tobj2!=null) {
+						tobj2.paintColor(g2, width,height, Color.BLUE);
+					}
+				}
+				
 			}
 			if(!Arrays.deepEquals(lastOrbits, orbits)){
 				System.out.println(lastOrbits);
 				System.out.println(orbits);
-				evaluateArchitecture(orbits, objects);
+				evaluateArchitecture(orbits, objectList);
 			}
 			lastOrbits = orbits;
 		}
@@ -350,7 +349,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	      
         // Set a path to the project folder
         String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
-        path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
+       // path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
         
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
@@ -416,7 +415,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		cost = p.productivity;
 	}*/
 	
-	private double[] evaluateArchitecture(Orbit [] orbits, Enumeration<TuioDemoObject> objects) {
+	private double[] evaluateArchitecture(Orbit [] orbits, ArrayList<TuioDemoObject> objectList) {
 		System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();
 			for (Orbit o : orbits) {
@@ -439,8 +438,15 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        	//	GraphPoint lastGraph = (GraphPoint)window.getContentPane().getComponent(0);
 	        	//	lastGraph.clearLatest();
 	        	//}
-	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter);
-	        	
+	        	GraphPoint newPoint = new GraphPoint(newScience*4000,newCost/12.0, this.xMin, this.xMax, this.yMin,this.yMax,orbits,++pointCounter, objectList);
+	        	/*
+	        	 if (lastSelectedPoint != null) {
+	     	    	System.out.println("HEREHEREHERHERHE \n HERHERHERHERHEH \n HEHREHRE");
+	     	    	HistoryWindow hw = new HistoryWindow(lastSelectedPoint.objects, 640, 480, pc_window);
+	     	    	pc_window.getContentPane().removeAll();
+	     	    	pc_window.getContentPane().add(hw);
+	     	    }
+	        	*/
 	        	Container cp = window.getContentPane();
 		        window.getContentPane().add(newPoint,0);
 		        int [] bounds = newPoint.getBoundaries();
