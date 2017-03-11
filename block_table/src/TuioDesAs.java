@@ -33,7 +33,7 @@ import TUIO.*;
 
 public class TuioDesAs  {
 
-	private final int window_width  = 640;
+	private final int window_width  = 480;
 	private final int window_height = 480;
 
 	private boolean fullscreen = false;
@@ -45,7 +45,7 @@ public class TuioDesAs  {
 	
 	public TuioDesAs() {
 		String preDataPath = "/Users/Nikhil/Desktop/git_repo/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
-		//preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
+		preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		demo = new TuioDemoComponent(preDataPath);
 		demo.init();
 		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -63,7 +63,7 @@ public class TuioDesAs  {
 		frame = new JFrame();
 		frame.add(demo);
 
-		frame.setTitle("TuioDesignAssistant");
+		frame.setTitle("Current Configuration");
 		frame.setResizable(false);
 
 		frame.addWindowListener( new WindowAdapter() { public void windowClosing(WindowEvent evt) {

@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/RBSAEOSS-Eval"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Student Groups"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
