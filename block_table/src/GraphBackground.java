@@ -21,7 +21,7 @@ public class GraphBackground extends JComponent {
 	}
 	public void paint(Graphics g) {
 		
-		g.setColor(Color.gray);
+		g.setColor(Color.getHSBColor(0.0f, 0.0f, 0.80f));
 		for(int i=0; i<data.size(); i++){
 			g.fillRect(xMin+(int)data.get(i)[0], yMax-yMin-(int)data.get(i)[1], 5,5);	  
 		}

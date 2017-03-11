@@ -10,15 +10,16 @@ public class PointMouseAdapter extends MouseAdapter {
 		int x = e.getX();
 		int y = e.getY();
 		String key = String.format("%d%d", x,y);
-		HashMap<String,GraphPoint> pmap = TuioDemoComponent.pixelMap;
+		//HashMap<String,GraphPoint> pmap = TuioDemoComponent.pixelMap;
 		GraphPoint gp = TuioDemoComponent.pixelMap.get(key);
 		if(gp != null){
+			TuioDemoComponent.lastSelectedPoint = gp;
 			TuioDemoComponent.Orbit [] configuration = gp.configuration;
-		
-			for (TuioDemoComponent.Orbit o : configuration) {
-				System.out.print("Configuration ");
-				System.out.println("Orbit: " + o.fancyString() + "\n");
-			}
+			
+//			for (TuioDemoComponent.Orbit o : configuration) {
+//				System.out.print("Configuration ");
+//				System.out.println("Orbit: " + o.fancyString() + "\n");
+//			}
 		}
 	}
 

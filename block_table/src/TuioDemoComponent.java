@@ -23,6 +23,7 @@
 */
 
 import java.awt.*;
+import java.util.Arrays;
 
 import java.awt.geom.*;
 import java.awt.event.*;
@@ -64,6 +65,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public boolean verbose = false;
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
+	private Orbit [] lastOrbits = null;
+	
 	
 	private final int xMin = 85;
 	private final int xMax = 1285; //4000x (0,0.281)
@@ -73,6 +76,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private final double yScale = 1/12.0;
 	private static final double changeEpsilon = 1e-3;
 	private MouseAdapter mouseAdapt = new PointMouseAdapter();
+	public static GraphPoint lastSelectedPoint = null;
 	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
 	
 	public TuioDemoComponent() {
@@ -283,25 +287,46 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				else 
 					markers[0].add(tobj);
 
-				orbits = new Orbit[5];				
 
-				for (int i=0; i<orbits.length; i++) {
-					orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
-				}
 				
-
-				g2.setColor(Color.BLACK);
-				g2.drawString(orbits[4].fancyString(), 20, 13);
-				g2.drawString(orbits[3].fancyString(), 20, 110);
-				g2.drawString(orbits[2].fancyString(), 20, 206);
-				g2.drawString(orbits[1].fancyString(), 20, 302);
-				g2.drawString(orbits[0].fancyString(), 20, 398);
 				
 				
 
 			}
 		}
-		if (tobj!=null) evaluateArchitecture(orbits);
+		orbits = new Orbit[5];				
+
+		for (int i=0; i<orbits.length; i++) {
+			orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
+		}
+		
+		if (tobj!=null) {
+			//write the orbits and their contents
+			g2.setColor(Color.RED);
+			g2.drawString("Current "+orbits[4].fancyString(), 20, 13);
+			g2.drawString("Current "+orbits[3].fancyString(), 20, 110);
+			g2.drawString("Current "+orbits[2].fancyString(), 20, 206);
+			g2.drawString("Current "+orbits[1].fancyString(), 20, 302);
+			g2.drawString("Current "+orbits[0].fancyString(), 20, 398);
+			
+			//write the last selected point's orbits and their contents
+			if(lastSelectedPoint != null){
+				Orbit[] selectedOrbits = lastSelectedPoint.configuration;
+				g2.setColor(Color.BLUE);
+				g2.drawString("Selected "+selectedOrbits[4].fancyString(), 400, 13);
+				g2.drawString("Selected "+selectedOrbits[3].fancyString(), 400, 110);
+				g2.drawString("Selected "+selectedOrbits[2].fancyString(), 400, 206);
+				g2.drawString("Selected "+selectedOrbits[1].fancyString(), 400, 302);
+				g2.drawString("Selected "+selectedOrbits[0].fancyString(), 400, 398);
+				
+			}
+			if(!Arrays.deepEquals(lastOrbits, orbits)){
+				System.out.println(lastOrbits);
+				System.out.println(orbits);
+				evaluateArchitecture(orbits);
+			}
+			lastOrbits = orbits;
+		}
 		
 		
 	}
@@ -387,7 +412,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        Architecture architecture = AG.defineNewArch(input_arch);
 	        
 	        // Evaluate the architecture
-	        Result result = AE.evaluateArchitecture(architecture,"Slow");
+        Result result = AE.evaluateArchitecture(architecture,"Slow");
 	        
 	        // Save the score and the cost
 	        double newCost = result.getCost();
@@ -404,8 +429,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        	Container cp = window.getContentPane();
 		        window.getContentPane().add(newPoint,0);
 		        int [] bounds = newPoint.getBoundaries();
-		        for(int i=bounds[0]; i<bounds[0]+bounds[2]; i++){
-		        	for(int j=bounds[1]; j<bounds[1]+bounds[2]; j++){
+		        for(int i=bounds[0]; i<=(bounds[0]+bounds[2]); i++){
+		        	for(int j=bounds[1]; j<=(bounds[1]+bounds[2]); j++){
 		        		HashMap<String,GraphPoint> debugmap = pixelMap;
 		        		pixelMap.put(String.format("%d%d",i,j), newPoint);
 		        	}
@@ -464,6 +489,38 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			
 			rs = rs.trim() + "]";
 			return rs;
+		}
+
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((markers == null) ? 0 : markers.hashCode());
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Orbit other = (Orbit) obj;
+			if (markers == null) {
+				if (other.markers != null)
+					return false;
+			} else if (!markers.equals(other.markers))
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			return true;
 		}
 	}
 

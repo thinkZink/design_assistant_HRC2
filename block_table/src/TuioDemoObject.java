@@ -56,7 +56,7 @@ public class TuioDemoObject extends TuioObject {
 		trans.scale(scale,scale);
 		Shape s = trans.createTransformedShape(square);
 	
-		g.setPaint(Color.black);
+		g.setPaint(Color.red);
 		g.fill(s);
 		g.setPaint(Color.white);
 		g.drawString(toTuioLetter()+"",Xpos-10,Ypos);

@@ -1,6 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -15,7 +18,7 @@ class GraphPoint extends JComponent {
 	int xPlot;
 	int yPlot;
 	int index = 0;
-	int diameter = 5;
+	int diameter = 11;
 	int xMin;
 	int xMax;
 	int yMax;
@@ -55,13 +58,17 @@ class GraphPoint extends JComponent {
 		//if this is the most recent point, make it red.
 		System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
 		if(index==TuioDemoComponent.pointCounter){
+			g.setColor(Color.black);
+			g.drawOval(xPlot-1, yPlot-1, size+1,size+1);
 			g.setColor(Color.getHSBColor(1.0f, 1.0f, 1.0f));
-			size = diameter;
+			size = (int)1.5*diameter;
+	
 		}
 		else{
-			g.setColor(Color.getHSBColor(0.5f,(float)index/TuioDemoComponent.pointCounter, 1-(float)index/TuioDemoComponent.pointCounter));
+			g.setColor(Color.getHSBColor(1.0f,(float)index/TuioDemoComponent.pointCounter, (float)index/TuioDemoComponent.pointCounter));
+			
 		}
-		g.fillRect(xPlot, yPlot, size,size);	  
+		g.fillOval(xPlot, yPlot, size,size);	  
 	}
 
 
@@ -69,6 +76,10 @@ class GraphPoint extends JComponent {
 		
 		int[] bounds = {xPlot,yPlot,diameter};  
 		return bounds;
+	}
+	
+	public void paintBlocks(Graphics2D g) {
+
 	}
 }
 
