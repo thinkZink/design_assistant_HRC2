@@ -57,6 +57,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public static int pointCounter = 0;
 	
 	public JFrame window;
+	public JFrame pc_window;
 	public double cost = 0;
 	public double science = 0;
 	
@@ -91,6 +92,20 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.getContentPane().add(initialGraph);
 	    window.getContentPane().setBackground(Color.WHITE);
 	    window.setVisible(true);
+	    
+	    pc_window = new JFrame();
+	    pc_window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    
+	    if (lastSelectedPoint != null) {
+	    	HistoryWindow hw = new HistoryWindow(lastSelectedPoint.objects, 640, 480, pc_window);
+	    	pc_window.getContentPane().add(hw);
+	    }
+	    pc_window.setBounds(xMin+5, yMin+5, 640, 480);
+	    pc_window.getContentPane().setBackground(Color.WHITE);
+	    pc_window.setVisible(true);
+	    
+	    
+	    
 		
 	}
 	public TuioDemoComponent(String preDataPath) {
@@ -258,7 +273,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			markers[i] = new ArrayList<TuioDemoObject>(); 
 		}
 		
-
+		
 		Orbit [] orbits = new Orbit[5];
 		TuioDemoObject tobj = null;
 		while (objects.hasMoreElements()) {
@@ -323,7 +338,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			if(!Arrays.deepEquals(lastOrbits, orbits)){
 				System.out.println(lastOrbits);
 				System.out.println(orbits);
-				evaluateArchitecture(orbits);
+				evaluateArchitecture(orbits, objects);
 			}
 			lastOrbits = orbits;
 		}
@@ -401,7 +416,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		cost = p.productivity;
 	}*/
 	
-	private double[] evaluateArchitecture(Orbit [] orbits) {
+	private double[] evaluateArchitecture(Orbit [] orbits, Enumeration<TuioDemoObject> objects) {
 		System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();
 			for (Orbit o : orbits) {

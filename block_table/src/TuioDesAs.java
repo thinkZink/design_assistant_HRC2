@@ -59,27 +59,7 @@ public class TuioDesAs  {
 	}
 	
 	public void setupWindow() {
-		
-		JFrame graph_frame = new JFrame();
-		/*
-		//graph_frame.setSize(640, 480);
-		//double x = (design_assistant.demo).cost;
-		//double y = (design_assistant.demo).science;
-		//System.out.println("x: " + x + "\n" + "y: " + y);
-		graph_frame.pack();
-		Insets insets = graph_frame.getInsets();			
-		graph_frame.setSize(640,480 +insets.top);
-		graph_frame.setCursor(Cursor.getDefaultCursor());
-		graph_frame.setVisible(true);
-		graph_frame.repaint();
-		*/
-		
-		
-		
-		
-		
-		
-		
+	
 		frame = new JFrame();
 		frame.add(demo);
 
