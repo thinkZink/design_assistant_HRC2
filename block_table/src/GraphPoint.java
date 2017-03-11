@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.util.Enumeration;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -24,6 +25,7 @@ class GraphPoint extends JComponent {
 	int yMax;
 	int yMin;
 	TuioDemoComponent.Orbit [] configuration;
+	Enumeration<TuioDemoObject> objects;
 	
 
 	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TuioDemoComponent.Orbit[] orbits,int index) {
