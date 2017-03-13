@@ -27,7 +27,7 @@ public class HistoryWindow extends JComponent{
 		this.width = width;
 		this.height = height;
 		this.frame = frame;
-		this.selectedOrbits = null;
+		this.selectedOrbits = new TuioDemoComponent.Orbit[5];
 	}
 	public void paint(Graphics g) {
 		g.setColor(Color.black);
@@ -35,31 +35,36 @@ public class HistoryWindow extends JComponent{
 		g.drawLine(0, 192, width, 192);
 		g.drawLine(0, 288, width, 288);
 		g.drawLine(0, 384, width, 384);
-		System.out.println("Painting History Window");
+		//System.out.println("Painting History Window");
 		
 		if(this.objects != null){
-		for (TuioDemoObject tobj : objects) {
 			
-			if (tobj!=null) { 
-				Insets insets = frame.getInsets();	
-				tobj.paintColor((Graphics2D)g, width,height,Color.BLUE);
+			//welp, we can simplify this a lot b/c markers are tobj's.
+//			for (TuioDemoObject tobj : objects) {
+//			
+//				if (tobj!=null) { 
+//					Insets insets = frame.getInsets();	
+//					tobj.paintColor((Graphics2D)g, width,height,Color.BLUE);
+//				}
+//			}
+			for (TuioDemoComponent.Orbit orbit : this.selectedOrbits){
+				for (TuioDemoObject marker: orbit.markers){
+					if(marker!=null){
+						Insets insets = frame.getInsets();
+						marker.paintColor((Graphics2D)g, width, height, Color.BLUE);
+					}
+				}
 			}
 			
-				g.setColor(Color.BLUE);
-				g.drawString("Selected "+selectedOrbits[4].fancyString(), 20, 13);
-				g.drawString("Selected "+selectedOrbits[3].fancyString(), 20, 110);
-				g.drawString("Selected "+selectedOrbits[2].fancyString(), 20, 206);
-				g.drawString("Selected "+selectedOrbits[1].fancyString(), 20, 302);
-				g.drawString("Selected "+selectedOrbits[0].fancyString(), 20, 398);
-			
+			//need to initialize these to empty orbits in order to move outside condition
+			g.setColor(Color.BLUE);
+			g.drawString("Selected "+selectedOrbits[4].fancyString(), 20, 13);
+			g.drawString("Selected "+selectedOrbits[3].fancyString(), 20, 110);
+			g.drawString("Selected "+selectedOrbits[2].fancyString(), 20, 206);
+			g.drawString("Selected "+selectedOrbits[1].fancyString(), 20, 302);
+			g.drawString("Selected "+selectedOrbits[0].fancyString(), 20, 398);	
 		}
-		}
-		
-		g.drawLine(0, 96, width, 96);
-		g.drawLine(0, 192, width, 192);
-		g.drawLine(0, 288, width, 288);
-		g.drawLine(0, 384, width, 384);
-	
+
 	
 }
 }

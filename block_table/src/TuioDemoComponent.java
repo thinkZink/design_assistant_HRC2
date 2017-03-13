@@ -60,7 +60,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public JFrame pc_window;
 	public double cost = 0;
 	public double science = 0;
-	
+
 	public static int width, height;
 	private float scale = 1.0f;
 	public boolean verbose = false;
@@ -70,14 +70,18 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	
 	
 	private final int xMin = 85;
-	private final int xMax = 1285; //4000x (0,0.281)
+	private final int xMax = 1285+100; //4000x (0,0.281) 100px margin of error (these bounds are estimated on the pre-data)
 	private final int yMin = 25;
-	private final int yMax = 825; //(1/12)x (0,9981)
+	private final int yMax = 825+50; //(1/12)x (0,9981), with a 50px margin of error (some of the points were above the plot)
 	private final double xScale = 4000;
 	private final double yScale = 1/12.0;
 	private final int configWindowWidth = 480;
 	private final int configWindowHeight = 480;
-	
+	private final int xPadding = 55;
+	private final int yPadding = 75;
+	private final int yWindowMax = configWindowHeight*2-yPadding;
+	private final int xWindowMax = 1920-configWindowWidth;
+	//private final int xMax = 1920-configWindowWidth-xPadding;
 	private static final double changeEpsilon = 1e-3;
 	private MouseAdapter mouseAdapt = new PointMouseAdapter();
 	public static GraphPoint lastSelectedPoint = null;
@@ -115,7 +119,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		window = new JFrame();
 		window.setTitle("Cost vs Science Benefit Plot");
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    window.setBounds(xMin+configWindowWidth, yMin+5, xMax+55, yMax+75);
+	    window.setBounds(configWindowWidth+5, yMin+5, xWindowMax-10, yMax+75);
 	    GraphCoordinates initialGraph = new GraphCoordinates(xMin, xMax, yMin, yMax, xScale, yScale);
 	    initialGraph.addMouseListener(mouseAdapt);
 	    
@@ -316,13 +320,13 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 					markers[0].add(tobj);
 			}
 		}
-		orbits = new Orbit[5];				
+					
 
 		for (int i=0; i<orbits.length; i++) {
 			orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
 		}
 		
-		if (tobj!=null) {
+		if (tobj!=null||true) { //remove this if statement; always paint the point
 			//write the orbits and their contents
 			g2.setColor(Color.RED);
 			g2.drawString("Current "+orbits[4].fancyString(), 20, 13);
@@ -331,6 +335,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			g2.drawString("Current "+orbits[1].fancyString(), 20, 302);
 			g2.drawString("Current "+orbits[0].fancyString(), 20, 398);
        	 if (lastSelectedPoint != null) {
+       		lastSelectedPoint.paint(window.getContentPane().getGraphics());
   	    	HistoryWindow hw = new HistoryWindow(lastSelectedPoint.objectList, configWindowWidth, configWindowHeight, pc_window,lastSelectedPoint.configuration);
   	    	pc_window.getContentPane().removeAll();
   	    	pc_window.getContentPane().add(hw);
@@ -365,6 +370,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 				System.out.println(lastOrbits);
 				System.out.println(orbits);
 				evaluateArchitecture(orbits, objectList);
+
 			}
 			lastOrbits = orbits;
 		}
@@ -441,7 +447,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		science = p.happiness;
 		cost = p.productivity;
 	}*/
-	
+
 	private double[] evaluateArchitecture(Orbit [] orbits, ArrayList<TuioDemoObject> objectList) {
 		System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();

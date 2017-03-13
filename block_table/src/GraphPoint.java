@@ -34,7 +34,7 @@ class GraphPoint extends JComponent {
 		this.dim1 = x;
 		this.dim2 = y;
 		this.xPlot = (int)x+xMin-diameter/2;
-		this.yPlot = yMax-yMin-(int)y-diameter/2;
+		this.yPlot = yMax-(int)y-diameter/2;
 		this.dim2 = y;
 		this.xMin = xMin;
 		this.xMax = xMax;
@@ -60,16 +60,24 @@ class GraphPoint extends JComponent {
 		//in the demoComponent that tracks how many points there are
 		//if this is the most recent point, make it red.
 		System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
+		//circle the current point in black
 		if(index==TuioDemoComponent.pointCounter){
 			g.setColor(Color.black);
-			g.drawOval(xPlot-1, yPlot-1, size+1,size+1);
-			g.setColor(Color.getHSBColor(1.0f, 1.0f, 1.0f));
+			g.fillOval(xPlot-2, yPlot-2, size+4,size+4);
+			g.setColor(Color.getHSBColor(0.0f, 1.0f, 1.0f));
 			size = (int)1.5*diameter;
 	
 		}
 		else{
-			g.setColor(Color.getHSBColor(1.0f,(float)index/TuioDemoComponent.pointCounter, (float)index/TuioDemoComponent.pointCounter));
-			
+			//circle the last selected point in blue
+			if(this.equals(TuioDemoComponent.lastSelectedPoint)){
+				g.setColor(Color.BLUE);
+				g.fillOval(xPlot-2, yPlot-2, size+4,size+4);
+				g.setColor(Color.getHSBColor(0.0f, 1.0f, 1.0f));
+				size = (int)1.5*diameter;
+			}
+			//g.setColor(Color.getHSBColor(1.0f,(float)index/TuioDemoComponent.pointCounter, (float)index/TuioDemoComponent.pointCounter));
+			g.setColor(Color.getHSBColor(0.0f,(float)index/TuioDemoComponent.pointCounter, 1.0f));
 		}
 		g.fillOval(xPlot, yPlot, size,size);	  
 	}

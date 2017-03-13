@@ -14,8 +14,8 @@ public class PointMouseAdapter extends MouseAdapter {
 		GraphPoint gp = TuioDemoComponent.pixelMap.get(key);
 		if(gp != null){
 			TuioDemoComponent.lastSelectedPoint = gp;
+
 			TuioDemoComponent.Orbit [] configuration = gp.configuration;
-			
 //			for (TuioDemoComponent.Orbit o : configuration) {
 //				System.out.print("Configuration ");
 //				System.out.println("Orbit: " + o.fancyString() + "\n");
