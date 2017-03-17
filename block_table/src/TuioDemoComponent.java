@@ -522,7 +522,15 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		
 		public Orbit (String name, ArrayList<TuioDemoObject> markers){
 			this.name = name;
-			this.markers = markers;
+			this.markers = copyMarkers(markers);
+		}
+		//careful here, lots of warnings about using Object.clone(), consider implementing a deep copy for TuioDemoComponent
+		private ArrayList<TuioDemoObject> copyMarkers(ArrayList<TuioDemoObject> toCopy){
+			ArrayList<TuioDemoObject> toReturn = new ArrayList<TuioDemoObject>();
+			for(int i = 0; i < toCopy.size(); i++){
+				toReturn.add((TuioDemoObject)toCopy.get(i).clone());
+			}
+			return toReturn;
 		}
 		
 		public ArrayList<Integer> getIDs() {

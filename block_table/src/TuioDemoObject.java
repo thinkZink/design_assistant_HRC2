@@ -29,7 +29,7 @@ import java.awt.event.*;
 import java.util.*;
 import TUIO.*;
 
-public class TuioDemoObject extends TuioObject {
+public class TuioDemoObject extends TuioObject implements Cloneable{
 
 	private Shape square;
 
@@ -43,7 +43,13 @@ public class TuioDemoObject extends TuioObject {
 		transform.rotate(angle,xpos,ypos);
 		square = transform.createTransformedShape(square);
 	}
-	
+	public Object clone(){  
+	    try{  
+	        return super.clone();  
+	    }catch(Exception e){ 
+	        return null; 
+	    }
+	}
 	public void paint(Graphics2D g, int width, int height) {
 	
 		float Xpos = xpos*width;
