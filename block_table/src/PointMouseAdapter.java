@@ -13,7 +13,7 @@ public class PointMouseAdapter extends MouseAdapter {
 		//HashMap<String,GraphPoint> pmap = TuioDemoComponent.pixelMap;
 		GraphPoint gp = TuioDemoComponent.pixelMap.get(key);
 		if(gp != null){
-			TuioDemoComponent.lastSelectedPoint = gp;
+			TuioDemoComponent.currentSelectedPoint = gp;
 
 			TuioDemoComponent.Orbit [] configuration = gp.configuration;
 //			for (TuioDemoComponent.Orbit o : configuration) {

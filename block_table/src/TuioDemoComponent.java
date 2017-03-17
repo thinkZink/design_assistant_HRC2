@@ -85,6 +85,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private static final double changeEpsilon = 1e-3;
 	private MouseAdapter mouseAdapt = new PointMouseAdapter();
 	public static GraphPoint lastSelectedPoint = null;
+	public static GraphPoint currentSelectedPoint = null;
 	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
 	
 	public TuioDemoComponent() {
@@ -137,6 +138,10 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    pc_window.setBounds(0, yMin+configWindowHeight, configWindowWidth, configWindowHeight);
 	    pc_window.getContentPane().setBackground(Color.WHITE);
 	    
+	    pc_window.setVisible(true);
+	    HistoryWindow hw = new HistoryWindow(configWindowWidth, configWindowHeight, pc_window);
+	    pc_window.getContentPane().removeAll();
+	    pc_window.getContentPane().add(hw);
 	    pc_window.setVisible(true);
 	    
 		
@@ -334,18 +339,24 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			g2.drawString("Current "+orbits[2].fancyString(), 20, 206);
 			g2.drawString("Current "+orbits[1].fancyString(), 20, 302);
 			g2.drawString("Current "+orbits[0].fancyString(), 20, 398);
-       	 if (lastSelectedPoint != null) {
-       		lastSelectedPoint.paint(window.getContentPane().getGraphics());
-  	    	HistoryWindow hw = new HistoryWindow(lastSelectedPoint.objectList, configWindowWidth, configWindowHeight, pc_window,lastSelectedPoint.configuration);
+		if (currentSelectedPoint != null && !currentSelectedPoint.equals(lastSelectedPoint)) {
+       		 lastSelectedPoint = currentSelectedPoint;
+       		//currentSelectedPoint.paint(window.getContentPane().getGraphics());
+       		window.revalidate();
+       		window.repaint();
+  	    	HistoryWindow hw = new HistoryWindow(currentSelectedPoint.objectList, configWindowWidth, configWindowHeight, pc_window,lastSelectedPoint.configuration);
   	    	pc_window.getContentPane().removeAll();
   	    	pc_window.getContentPane().add(hw);
-  	    	pc_window.setVisible(true);
+  	    	//pc_window.setVisible(true);
+  	    	pc_window.revalidate();
+  	    	pc_window.repaint();
+  	    	
   	    }
        	 else{
-       		HistoryWindow hw = new HistoryWindow(640, 480, pc_window);
-  	    	pc_window.getContentPane().removeAll();
-  	    	pc_window.getContentPane().add(hw);
-  	    	pc_window.setVisible(true);
+//       		HistoryWindow hw = new HistoryWindow(configWindowWidth, configWindowHeight, pc_window);
+//  	    	pc_window.getContentPane().removeAll();
+//  	    	pc_window.getContentPane().add(hw);
+//  	    	pc_window.setVisible(true);
        	 }
 			//write the last selected point's orbits and their contents
 //			if(lastSelectedPoint != null){
@@ -383,7 +394,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
         // Set a path to the project folder
         String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
        path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
-        
+        path = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval2";
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
         Params params = null;
@@ -488,7 +499,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		        
 		        //window.getContentPane().getComponent(numComponents-1).repaint();
 		        //window.getContentPane().getComponent(numComponents).repaint();
-		        window.setVisible(true);
+		        //window.setVisible(true);
+		        window.revalidate();
+		        window.repaint();
 	        }
 	        cost = newCost;
 	        science = newScience;
