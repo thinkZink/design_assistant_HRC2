@@ -475,7 +475,11 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        // Save the score and the cost
 	        double newCost = result.getCost();
 	        double newScience = result.getScience();
-	        if(Math.abs(newCost-cost) + Math.abs(newScience-science) > changeEpsilon){
+	        //I think it's ok to call this every time now, and we actually should be, since
+	        //evaluate architecture is now only called when needed, and overlapping points should show the most recent.
+	        //the problem here is getting bloat where the number of graphpoints is going to grow for overlapping points.
+	        //the tradeoff is getting the most recent configuration associated with a stack of points if the cost /benefit doesn't change
+	        //if(true || Math.abs(newCost-cost) + Math.abs(newScience-science) > changeEpsilon){
 	        	System.out.println("Changing color");
 	        	//int numComponents = window.getContentPane().getComponentCount();
 	        	//if(numComponents>2){ //2 is the number of non-point components (background + coordinates) come up with a better way
@@ -502,7 +506,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		        //window.setVisible(true);
 		        window.revalidate();
 		        window.repaint();
-	        }
+	        //}
 	        cost = newCost;
 	        science = newScience;
 		    //System.out.println("Graph");
