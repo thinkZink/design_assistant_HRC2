@@ -53,13 +53,13 @@ class GraphPoint extends JComponent {
 		
 	}
 	public void paint(Graphics g) {
-		System.out.println("Painting");
+		//System.out.println("Painting");
 		g.setColor(Color.blue);
 		int size = diameter;
 		//compare the current point index to a static variable
 		//in the demoComponent that tracks how many points there are
 		//if this is the most recent point, make it red.
-		System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
+		//System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
 		//circle the last selected point in blue
 		try{
 			if(this.index == TuioDemoComponent.currentSelectedPoint.index){

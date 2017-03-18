@@ -394,7 +394,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
         // Set a path to the project folder
         String path = "/Users/Nikhil/Desktop/git_repo/RBSAEOSS-Eval";
        path = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval";
-        path = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval2";
+        //path = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/RBSAEOSS-Eval2";
         AE = ArchitectureEvaluator.getInstance();
         AG = ArchitectureGenerator.getInstance();
         Params params = null;
@@ -460,12 +460,12 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	}*/
 
 	private double[] evaluateArchitecture(Orbit [] orbits, ArrayList<TuioDemoObject> objectList) {
-		System.out.println(orbits[0]);
+		//System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();
 			for (Orbit o : orbits) {
 				input_arch.add(o.toString());
 			}
-			System.out.println(input_arch);
+			//System.out.println(input_arch);
 	        // Generate a new architecture
 	        Architecture architecture = AG.defineNewArch(input_arch);
 	        
@@ -583,13 +583,22 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			if (markers == null) {
 				if (other.markers != null)
 					return false;
-			} else if (!markers.equals(other.markers))
+			} else if (markers.size() != other.markers.size()){
 				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
+			}
+			else{
+				for(int i=0; i< markers.size(); i++){
+					if (markers.get(i).getSymbolID() != other.markers.get(i).getSymbolID()){
+						return false; //note that you will get some false positives here insofar as the order doesn't matter
+					}
+				}
+			}
+				
+//			if (name == null) {
+//				if (other.name != null)
+//					return false;
+//			} else if (!name.equals(other.name))
+//				return false;
 			return true;
 		}
 	}
