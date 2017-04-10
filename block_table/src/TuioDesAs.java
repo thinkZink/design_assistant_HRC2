@@ -36,7 +36,7 @@ public class TuioDesAs  {
 	private final int window_width  = 480;
 	private final int window_height = 480;
 
-	private boolean fullscreen = false;
+	private boolean fullscreen = true;
 	
 	private TuioDemoComponent demo;
 	private JFrame frame;
@@ -47,12 +47,19 @@ public class TuioDesAs  {
 		String preDataPath = "/Users/Nikhil/Desktop/git_repo/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		//preDataPath = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
-		demo = new TuioDemoComponent(preDataPath);
+		frame = new JFrame();
+		demo = new TuioDemoComponent(preDataPath,frame);
+	
 		demo.init();
-		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		device = gs[0];//GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		invisibleCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "invisible cursor");
-		setupWindow();
-		showWindow();
+		frame.add(demo);
+		frame.setVisible(true);
+		frame.repaint();
+		//setupWindow();
+		//showWindow();
 	}
 	
 	public TuioListener getTuioListener() {
@@ -61,12 +68,13 @@ public class TuioDesAs  {
 	
 	public void setupWindow() {
 	
-		frame = new JFrame();
+		
 		frame.add(demo);
 
-		frame.setTitle("Current Configuration");
+		//frame.setTitle("Current Configuration");
 		frame.setResizable(false);
-
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
+	    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.addWindowListener( new WindowAdapter() { public void windowClosing(WindowEvent evt) {
 				System.exit(0);
 			} });
@@ -104,14 +112,14 @@ public class TuioDesAs  {
 			device.setFullScreenWindow(frame);
 			frame.setCursor(invisibleCursor);
 		} else {
-			int width  = window_width;
-			int height = window_height;
-			demo.setSize(width,height);
-			
-			frame.pack();
-			Insets insets = frame.getInsets();			
-			frame.setSize(width,height +insets.top);
-			frame.setCursor(Cursor.getDefaultCursor());
+//			int width  = window_width;
+//			int height = window_height;
+//			demo.setSize(width,height);
+//			
+//			frame.pack();
+//			Insets insets = frame.getInsets();			
+//			frame.setSize(width,height +insets.top);
+//			frame.setCursor(Cursor.getDefaultCursor());
 		}
 		
 		frame.setVisible(true);

@@ -15,7 +15,7 @@ public class PointMouseAdapter extends MouseAdapter {
 		if(gp != null){
 			TuioDemoComponent.currentSelectedPoint = gp;
 
-			TuioDemoComponent.Orbit [] configuration = gp.configuration;
+//			TuioDemoComponent.Orbit [] configuration = gp.configuration;
 //			for (TuioDemoComponent.Orbit o : configuration) {
 //				System.out.print("Configuration ");
 //				System.out.println("Orbit: " + o.fancyString() + "\n");

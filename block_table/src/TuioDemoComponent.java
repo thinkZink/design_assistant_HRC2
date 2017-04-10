@@ -51,7 +51,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private Hashtable<Long,TuioDemoBlob> blobList = new Hashtable<Long,TuioDemoBlob>();
 	
 	public static final int finger_size = 15;
-	public static final int object_size = 60;
+	public static final int object_size = 110;
 	public static final int table_size = 760;
 	
 	public static int pointCounter = 0;
@@ -67,20 +67,21 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
 	private Orbit [] lastOrbits = null;
-	
-	
+	private HistoryWindow hw;
+	private int histWidth,histHeight;
 	private final int xMin = 85;
 	private final int xMax = 1285+100; //4000x (0,0.281) 100px margin of error (these bounds are estimated on the pre-data)
 	private final int yMin = 25;
 	private final int yMax = 825+50; //(1/12)x (0,9981), with a 50px margin of error (some of the points were above the plot)
 	private final double xScale = 4000;
 	private final double yScale = 1/12.0;
-	private final int configWindowWidth = 480;
-	private final int configWindowHeight = 480;
+	private final int configWindowWidth = 0;
+	private final int configWindowHeight = 0;
 	private final int xPadding = 55;
 	private final int yPadding = 75;
 	private final int yWindowMax = configWindowHeight*2-yPadding;
 	private final int xWindowMax = 1920-configWindowWidth;
+	private final int numOrbits = 5;
 	//private final int xMax = 1920-configWindowWidth-xPadding;
 	private static final double changeEpsilon = 1e-3;
 	private MouseAdapter mouseAdapt = new PointMouseAdapter();
@@ -114,8 +115,12 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    
 		
 	}
-	public TuioDemoComponent(String preDataPath) {
+	public TuioDemoComponent(String preDataPath,JFrame frame) {
 		super();
+		//start by getting the screens
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		
 		
 		window = new JFrame();
 		window.setTitle("Cost vs Science Benefit Plot");
@@ -130,19 +135,33 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.setVisible(true);
 	    plotInitialData(preDataPath);
 	   
-	    pc_window = new JFrame();
+	    pc_window = frame;
+	    
+	    if( gs.length > 1 )
+	    {
+	    	gs[0].setFullScreenWindow( pc_window );
+	        histWidth = (int)gs[0].getDefaultConfiguration().getBounds().getWidth();
+		    histHeight = (int)gs[0].getDefaultConfiguration().getBounds().getHeight();
+	    }
+	    else{
+	    	histWidth = this.configWindowWidth;
+		    histHeight = this.configWindowHeight;
+		    pc_window.setBounds(0, yMin+configWindowHeight, configWindowWidth, configWindowHeight);
+	    }
+
 	    pc_window.setTitle("Configuration History");
 	    pc_window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
 	   
-	    pc_window.setBounds(0, yMin+configWindowHeight, configWindowWidth, configWindowHeight);
+	    
 	    pc_window.getContentPane().setBackground(Color.WHITE);
 	    
-	    pc_window.setVisible(true);
-	    HistoryWindow hw = new HistoryWindow(configWindowWidth, configWindowHeight, pc_window);
+	    //pc_window.setVisible(true);
+	    
+	    hw = new HistoryWindow(histWidth, histHeight, pc_window,this.numOrbits);
 	    pc_window.getContentPane().removeAll();
 	    pc_window.getContentPane().add(hw);
-	    pc_window.setVisible(true);
+	    //pc_window.setVisible(true);
 	    
 		
 	}
@@ -241,74 +260,74 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 
 	public void update(Graphics g) {
 	
-		Graphics2D g2 = (Graphics2D)g;
+		//Graphics2D g2 = (Graphics2D)g;
 		//Component info_comp = new Component();
 		
 		//Graphics2D g2_info = new Graphics2D();
 		//JFrame info_frame = new JFrame();
 		//Graphics g_info = info_frame.getGraphics();
 		
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		//g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	
-		g2.setColor(Color.white);
-		g2.fillRect(0,0,width,height);
+		//g2.setColor(Color.white);
+		//g2.fillRect(0,0,width,height);
 		
-		g2.setColor(Color.black);
-		g2.drawLine(0, 96, width, 96);
-		g2.drawLine(0, 192, width, 192);
-		g2.drawLine(0, 288, width, 288);
-		g2.drawLine(0, 384, width, 384);
+		//g2.setColor(Color.black);
+		//g2.drawLine(0, 96, width, 96);
+		//g2.drawLine(0, 192, width, 192);
+		//g2.drawLine(0, 288, width, 288);
+		//g2.drawLine(0, 384, width, 384);
 	
 		int w = (int)Math.round(width-scale*finger_size/2.0f);
 		int h = (int)Math.round(height-scale*finger_size/2.0f);
 		
 		Enumeration<TuioCursor> cursors = cursorList.elements();
-		while (cursors.hasMoreElements()) {
-			TuioCursor tcur = cursors.nextElement();
-			if (tcur==null) continue;
-			ArrayList<TuioPoint> path = tcur.getPath();
-			TuioPoint current_point = path.get(0);
-			if (current_point!=null) {
-				// draw the cursor path
-				g2.setPaint(Color.blue);
-				for (int i=0;i<path.size();i++) {
-					TuioPoint next_point = path.get(i);
-					g2.drawLine(current_point.getScreenX(w), current_point.getScreenY(h), next_point.getScreenX(w), next_point.getScreenY(h));
-					current_point = next_point;
-				}
-			}
-			
-			// draw the finger tip
-			g2.setPaint(Color.lightGray);
-			int s = (int)(scale*finger_size);
-			g2.fillOval(current_point.getScreenX(w-s/2),current_point.getScreenY(h-s/2),s,s);
-			g2.setPaint(Color.black);
-			g2.drawString(tcur.getCursorID()+"",current_point.getScreenX(w),current_point.getScreenY(h));
-		}
+//		while (cursors.hasMoreElements()) {
+//			TuioCursor tcur = cursors.nextElement();
+//			if (tcur==null) continue;
+//			ArrayList<TuioPoint> path = tcur.getPath();
+//			TuioPoint current_point = path.get(0);
+//			//if (current_point!=null) {
+//				// draw the cursor path
+//				//g2.setPaint(Color.blue);
+//				//for (int i=0;i<path.size();i++) {
+//					//TuioPoint next_point = path.get(i);
+//					//g2.drawLine(current_point.getScreenX(w), current_point.getScreenY(h), next_point.getScreenX(w), next_point.getScreenY(h));
+//					//current_point = next_point;
+//				//}
+//			}
+//			
+//			// draw the finger tip
+//			g2.setPaint(Color.lightGray);
+//			int s = (int)(scale*finger_size);
+//			g2.fillOval(current_point.getScreenX(w-s/2),current_point.getScreenY(h-s/2),s,s);
+//			g2.setPaint(Color.black);
+//			g2.drawString(tcur.getCursorID()+"",current_point.getScreenX(w),current_point.getScreenY(h));
+//		}
 
 		// draw the objects and print orbits
 		Enumeration<TuioDemoObject> objects = objectList.elements();
 		ArrayList<TuioDemoObject> objectList = new ArrayList<TuioDemoObject>();
-		ArrayList<TuioDemoObject> [] markers = new ArrayList[5];
+		ArrayList<TuioDemoObject> [] markers = new ArrayList[this.numOrbits];
 		for (int i=0; i<markers.length; i++) {
 			markers[i] = new ArrayList<TuioDemoObject>(); 
 		}
 		
 		
-		Orbit [] orbits = new Orbit[5];
+		Orbit [] orbits = new Orbit[this.numOrbits];
 		TuioDemoObject tobj = null;
 		while (objects.hasMoreElements()) {
 			tobj = objects.nextElement();
 			if (tobj!=null) { 
 				objectList.add(tobj);
-				tobj.paint(g2, width,height);
+		//		tobj.paint(g2, width,height);
 				
 				/*Sorting objects into orbits*/
-				TuioPoint obj_point = tobj.getPosition();
-				float obj_x = obj_point.getX();
-				float obj_y = obj_point.getY();
-				
+				//TuioPoint obj_point = tobj.getPosition();
+				//float obj_x = obj_point.getX();
+				float obj_y = tobj.getYtPos();
+				//System.out.println("("+obj_x+","+obj_y+")");
 				if (obj_y < 0.2) //96
 					markers[4].add(tobj);
 				
@@ -330,26 +349,26 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		for (int i=0; i<orbits.length; i++) {
 			orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
 		}
-		
+		hw.setCurrentOrbits(orbits);
 		if (tobj!=null||true) { //remove this if statement; always paint the point
 			//write the orbits and their contents
-			g2.setColor(Color.RED);
-			g2.drawString("Current "+orbits[4].fancyString(), 20, 13);
-			g2.drawString("Current "+orbits[3].fancyString(), 20, 110);
-			g2.drawString("Current "+orbits[2].fancyString(), 20, 206);
-			g2.drawString("Current "+orbits[1].fancyString(), 20, 302);
-			g2.drawString("Current "+orbits[0].fancyString(), 20, 398);
+//			g2.setColor(Color.RED);
+//			g2.drawString("Current "+orbits[4].fancyString(), 20, 13);
+//			g2.drawString("Current "+orbits[3].fancyString(), 20, 110);
+//			g2.drawString("Current "+orbits[2].fancyString(), 20, 206);
+//			g2.drawString("Current "+orbits[1].fancyString(), 20, 302);
+//			g2.drawString("Current "+orbits[0].fancyString(), 20, 398);
 		if (currentSelectedPoint != null && !currentSelectedPoint.equals(lastSelectedPoint)) {
        		 lastSelectedPoint = currentSelectedPoint;
        		//currentSelectedPoint.paint(window.getContentPane().getGraphics());
        		window.revalidate();
        		window.repaint();
-  	    	HistoryWindow hw = new HistoryWindow(currentSelectedPoint.objectList, configWindowWidth, configWindowHeight, pc_window,lastSelectedPoint.configuration);
-  	    	pc_window.getContentPane().removeAll();
-  	    	pc_window.getContentPane().add(hw);
+  	    	//HistoryWindow hw = new HistoryWindow(currentSelectedPoint.objectList, configWindowWidth, configWindowHeight, pc_window,lastSelectedPoint.configuration);
+  	    	//pc_window.getContentPane().removeAll();
+  	    	//pc_window.getContentPane().add(hw);
   	    	//pc_window.setVisible(true);
-  	    	pc_window.revalidate();
-  	    	pc_window.repaint();
+       		hw.setSelectedOrbits(lastSelectedPoint.configuration,currentSelectedPoint.objectList);
+  	    	
   	    	
   	    }
        	 else{
@@ -358,6 +377,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 //  	    	pc_window.getContentPane().add(hw);
 //  	    	pc_window.setVisible(true);
        	 }
+		pc_window.revalidate();
+	    pc_window.repaint();
 			//write the last selected point's orbits and their contents
 //			if(lastSelectedPoint != null){
 //				Orbit[] selectedOrbits = lastSelectedPoint.configuration;
@@ -377,7 +398,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 //				}
 				
 //			}
-			if(!Arrays.deepEquals(lastOrbits, orbits)){
+			if(objectList.size()>0 && !Arrays.deepEquals(lastOrbits, orbits)){
 				System.out.println(lastOrbits);
 				System.out.println(orbits);
 				evaluateArchitecture(orbits, objectList);
@@ -556,7 +577,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		}
 		
 		public String fancyString() {
-			String rs = name + " = [";
+			String rs = name.toUpperCase() + " = [";
 			
 			for (TuioDemoObject e : markers)
 				rs = rs + (e.toTuioLetter() + " ");	
