@@ -47,8 +47,11 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 	private final double d = 4.40677966e1;
 	private final double e = -2.6e3;
 	private final double f = 2.09691525e2;
+	
+	public int mod_id;
 	public TuioDemoObject(TuioObject tobj) {
 		super(tobj);
+		mod_id = symbol_id % 26;
 		//xpos = (int)(a*xpos+b*ypos+c);
 		//ypos = (int)(d*xpos+e*ypos+f);
 		int size = TuioDemoComponent.object_size;

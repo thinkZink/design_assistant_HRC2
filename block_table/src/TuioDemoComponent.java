@@ -50,6 +50,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private Hashtable<Long,TuioCursor> cursorList = new Hashtable<Long,TuioCursor>();
 	private Hashtable<Long,TuioDemoBlob> blobList = new Hashtable<Long,TuioDemoBlob>();
 	
+	private final boolean filteringMode = true;
+	
 	public static final int finger_size = 15;
 	public static final int object_size = 110;
 	public static final int table_size = 760;
@@ -66,6 +68,8 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public boolean verbose = false;
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
+	private Filter filterer;
+	private String preDataFile = null;
 	private Orbit [] lastOrbits = null;
 	private HistoryWindow hw;
 	private int histWidth,histHeight;
@@ -117,6 +121,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	}
 	public TuioDemoComponent(String preDataPath,JFrame frame) {
 		super();
+		preDataFile = preDataPath;
 		//start by getting the screens
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
@@ -401,7 +406,12 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			if(objectList.size()>0 && !Arrays.deepEquals(lastOrbits, orbits)){
 				System.out.println(lastOrbits);
 				System.out.println(orbits);
-				evaluateArchitecture(orbits, objectList);
+				if (filteringMode){
+					plotFilter(orbits);
+				}
+				else{
+					evaluateArchitecture(orbits, objectList);
+				}
 
 			}
 			lastOrbits = orbits;
@@ -422,6 +432,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
         String search_clps = "";
         params = new Params( path, "FUZZY-ATTRIBUTES", "test","normal",search_clps);//FUZZY or CRISP
         AE.init(1);
+        filterer = preDataFile != null ? new Filter(preDataFile) : new Filter();
 	}
 	
 	private ArrayList<double[]> getInitialData(String filename){
@@ -479,7 +490,18 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		science = p.happiness;
 		cost = p.productivity;
 	}*/
-
+	private void plotFilter(Orbit [] orbits){
+		long filterMatch = 0L;
+		ArrayList<double[]> filteredData;
+		for(int i = 0; i<numOrbits; i++){
+			filterMatch |= (orbits[i].toBinaryOneHot())<<((numOrbits-i+1)*12); //simplify this!
+		}
+		filteredData = filterer.getFilteredData(filterMatch);
+		GraphBackground preDataGraph = new GraphBackground(filteredData,this.xMin, this.xMax,this.yMin,this.yMax);
+		window.getContentPane().removeAll();
+		window.getContentPane().add(preDataGraph);
+		window.setVisible(true);
+	}
 	private double[] evaluateArchitecture(Orbit [] orbits, ArrayList<TuioDemoObject> objectList) {
 		//System.out.println(orbits[0]);
 		ArrayList<String> input_arch = new ArrayList<>();
@@ -574,6 +596,14 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 			
 			
 			return rs.trim();
+		}
+		
+		public long toBinaryOneHot() {
+			long oneHotRepr = 0;
+			for(TuioDemoObject e : markers){
+				oneHotRepr |= e.mod_id; 
+			}
+			return oneHotRepr;
 		}
 		
 		public String fancyString() {
