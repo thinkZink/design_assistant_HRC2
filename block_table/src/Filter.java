@@ -12,7 +12,9 @@ public class Filter {
 	public Filter(){
 		configurations = new HashMap<String,double[]>();
 	}
-	
+	public Filter(HashMap<String,double[]> initConfig){
+		configurations = initConfig;
+	}
 	public Filter(String dataFile){
 		configurations = getInitialData(dataFile);
 	}

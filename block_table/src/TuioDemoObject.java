@@ -97,7 +97,7 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 		float Xpos = xtpos*width;
 		float Ypos = height-(ytpos*height);
 		float scale = height/(float)TuioDemoComponent.table_size;
-		System.out.println("p:("+xpos+","+ypos+"),tp:("+xtpos+","+ytpos+"),P("+Xpos+","+Ypos+")");
+		//System.out.println("p:("+xpos+","+ypos+"),tp:("+xtpos+","+ytpos+"),P("+Xpos+","+Ypos+")");
 		AffineTransform trans = new AffineTransform();
 		trans.translate(-xtpos,-ytpos);
 		trans.translate(Xpos,Ypos);
@@ -109,10 +109,10 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 		g.drawString(toTuioLetter()+"",Xpos-10,Ypos);
 	}
 	public float getXtPos(){
-		return xpos*(1f/.65f)-(.03f*1f/.65f);
+		return xpos*(1f/.65f)-(.08f*1f/.65f);
 	}
 	public float getYtPos(){
-		return ypos*1f/.48f-.38f*1f/.48f;
+		return ypos*1f/.48f-.39f*1f/.48f;
 	}
 	public void update(TuioObject tobj) {
 		

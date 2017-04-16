@@ -49,7 +49,7 @@ public class TuioDesAs  {
 		//preDataPath = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		frame = new JFrame();
 		demo = new TuioDemoComponent(preDataPath,frame);
-	
+		//demo = new TuioDemoComponent(frame);
 		demo.init();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();

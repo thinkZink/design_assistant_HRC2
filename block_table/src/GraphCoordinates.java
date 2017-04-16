@@ -27,13 +27,15 @@ class GraphCoordinates extends JComponent {
 		this.yTickWidth = (int)((this.yMax-this.yMin)/this.numTicks); 
 	}
 	public void paint(Graphics g) {
-
+		String mode = TuioDemoComponent.filteringMode ? "Filtering" : "Exploration";
+		
 		System.out.println("Painting Coordinates");
 		g.setColor(Color.black);
 		g.drawLine(xMin, yMin, xMin, yMax); //y axis
 		g.drawLine(xMin, yMax, xMax, yMax); //x axis
 		g.drawString("Science", xMax/2, yMax+40);
-		g.drawString("Cost", xMin/2, yMin/2);	  
+		g.drawString("Cost", xMin/2, yMin/2);
+		g.drawString("Mode: "+ mode, xMax/2, yMin+40);
 		//tick marks
 		for(int xTick = xMin; xTick < xMax; xTick+=xTickWidth){
 			g.drawLine(xTick, yMax+5, xTick, yMax-5);

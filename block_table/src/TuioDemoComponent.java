@@ -50,7 +50,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private Hashtable<Long,TuioCursor> cursorList = new Hashtable<Long,TuioCursor>();
 	private Hashtable<Long,TuioDemoBlob> blobList = new Hashtable<Long,TuioDemoBlob>();
 	
-	private final boolean filteringMode = true;
+	public static boolean filteringMode = true;
 	
 	public static final int finger_size = 15;
 	public static final int object_size = 110;
@@ -69,6 +69,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private ArchitectureGenerator AG;
 	private ArchitectureEvaluator AE;
 	private Filter filterer;
+	private HashMap<String, double[]> randomData;
 	private String preDataFile = null;
 	private Orbit [] lastOrbits = null;
 	private HistoryWindow hw;
@@ -85,36 +86,93 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	private final int yPadding = 75;
 	private final int yWindowMax = configWindowHeight*2-yPadding;
 	private final int xWindowMax = 1920-configWindowWidth;
-	private final int numOrbits = 5;
+	public static final int numOrbits = 5;
+	public static final int numInstruments = 12;
 	//private final int xMax = 1920-configWindowWidth-xPadding;
 	private static final double changeEpsilon = 1e-3;
-	private MouseAdapter mouseAdapt = new PointMouseAdapter();
+	private MouseAdapter mouseAdapt;
 	public static GraphPoint lastSelectedPoint = null;
 	public static GraphPoint currentSelectedPoint = null;
 	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
+	private GraphBackground lastFilter = null;
 	
-	public TuioDemoComponent() {
+	public TuioDemoComponent(JFrame frame) {
+
 		super();
+		preDataFile = null;
+		//start by getting the screens
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		
 		
 		window = new JFrame();
+		window.setTitle("Cost vs Science Benefit Plot");
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
-	    GraphCoordinates initialGraph = new GraphCoordinates(xMin,xMax,yMin,yMax,xScale,yScale);
+	    window.setBounds(configWindowWidth+5, yMin+5, xWindowMax-10, yMax+75);
+	    GraphCoordinates initialGraph = new GraphCoordinates(xMin, xMax, yMin, yMax, xScale, yScale);
+	    mouseAdapt = new PointMouseAdapter(this);
 	    initialGraph.addMouseListener(mouseAdapt);
 	    
 	    window.getContentPane().add(initialGraph);
+	    
 	    window.getContentPane().setBackground(Color.WHITE);
 	    window.setVisible(true);
-	    /*
-	    pc_window = new JFrame();
+	    
+	   
+	    pc_window = frame;
+	    
+	    if( gs.length > 1 )
+	    {
+	    	gs[0].setFullScreenWindow( pc_window );
+	        histWidth = (int)gs[0].getDefaultConfiguration().getBounds().getWidth();
+		    histHeight = (int)gs[0].getDefaultConfiguration().getBounds().getHeight();
+	    }
+	    else{
+	    	histWidth = this.configWindowWidth;
+		    histHeight = this.configWindowHeight;
+		    pc_window.setBounds(0, yMin+configWindowHeight, configWindowWidth, configWindowHeight);
+	    }
+
+	    pc_window.setTitle("Configuration History");
 	    pc_window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
 	   
-	    pc_window.setBounds(xMin+5, yMin+5, 640, 480);
+	    
 	    pc_window.getContentPane().setBackground(Color.WHITE);
 	    
-	    pc_window.setVisible(true);
-	    */
+	    //pc_window.setVisible(true);
+	    
+	    hw = new HistoryWindow(histWidth, histHeight, pc_window,this.numOrbits);
+	    pc_window.getContentPane().removeAll();
+	    pc_window.getContentPane().add(hw);
+	    //pc_window.setVisible(true);
+	    
+		
+		
+		
+		
+//		super();
+//		
+//		window = new JFrame();
+//	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	    window.setBounds(xMin+5, yMin+5, xMax+55, yMax+75);
+//	    GraphCoordinates initialGraph = new GraphCoordinates(xMin,xMax,yMin,yMax,xScale,yScale);
+//	    mouseAdapt = new PointMouseAdapter(this);
+//	    initialGraph.addMouseListener(mouseAdapt);
+//	    
+//	    window.getContentPane().add(initialGraph);
+//	    window.getContentPane().setBackground(Color.WHITE);
+//	    window.setVisible(true);
+//	    /*
+//	    pc_window = new JFrame();
+//	    pc_window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	    
+//	   
+//	    pc_window.setBounds(xMin+5, yMin+5, 640, 480);
+//	    pc_window.getContentPane().setBackground(Color.WHITE);
+//	    
+//	    pc_window.setVisible(true);
+//	    */
 	    
 	    
 		
@@ -132,6 +190,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    window.setBounds(configWindowWidth+5, yMin+5, xWindowMax-10, yMax+75);
 	    GraphCoordinates initialGraph = new GraphCoordinates(xMin, xMax, yMin, yMax, xScale, yScale);
+	    mouseAdapt = new PointMouseAdapter(this);
 	    initialGraph.addMouseListener(mouseAdapt);
 	    
 	    window.getContentPane().add(initialGraph);
@@ -264,7 +323,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	}
 
 	public void update(Graphics g) {
-	
+		performUpdate(false);
+	}
+	public void performUpdate(boolean forceEval){
 		//Graphics2D g2 = (Graphics2D)g;
 		//Component info_comp = new Component();
 		
@@ -403,9 +464,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 //				}
 				
 //			}
-			if(objectList.size()>0 && !Arrays.deepEquals(lastOrbits, orbits)){
-				System.out.println(lastOrbits);
-				System.out.println(orbits);
+			if((objectList.size()>0 && !Arrays.deepEquals(lastOrbits, orbits))||forceEval == true){
+				//System.out.println(lastOrbits);
+				//System.out.println(orbits);
 				if (filteringMode){
 					plotFilter(orbits);
 				}
@@ -432,7 +493,14 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
         String search_clps = "";
         params = new Params( path, "FUZZY-ATTRIBUTES", "test","normal",search_clps);//FUZZY or CRISP
         AE.init(1);
-        filterer = preDataFile != null ? new Filter(preDataFile) : new Filter();
+        if(preDataFile != null){
+        	filterer = new Filter(preDataFile);
+        }
+        else{
+        	randomData = plotInitialData();
+        	filterer = new Filter(randomData);
+        }
+        //filterer = preDataFile != null ? new Filter(preDataFile) : new Filter(randomData);
 	}
 	
 	private ArrayList<double[]> getInitialData(String filename){
@@ -463,7 +531,13 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        }
 	    return initialData;
 	}
-	
+	private HashMap<String, double[]> plotInitialData(){
+		GraphBackground preDataGraph = new GraphBackground(this.xMin, this.xMax,this.yMin,this.yMax);
+		HashMap<String, double[]> data = preDataGraph.generateRandomArchitectures(1, AG, AE);
+		window.getContentPane().add(preDataGraph);
+		window.setVisible(true);
+		return data;
+	}
 	private void plotInitialData(String filename){
 		ArrayList<double[]> data = getInitialData(filename);
 		GraphBackground preDataGraph = new GraphBackground(data,this.xMin, this.xMax,this.yMin,this.yMax);
@@ -494,12 +568,16 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		long filterMatch = 0L;
 		ArrayList<double[]> filteredData;
 		for(int i = 0; i<numOrbits; i++){
-			filterMatch |= (orbits[i].toBinaryOneHot())<<((numOrbits-i+1)*12); //simplify this!
+			filterMatch |= (orbits[i].toBinaryOneHot())<<((numOrbits-(i+1))*numInstruments); //simplify this!
 		}
 		filteredData = filterer.getFilteredData(filterMatch);
-		GraphBackground preDataGraph = new GraphBackground(filteredData,this.xMin, this.xMax,this.yMin,this.yMax);
-		window.getContentPane().removeAll();
-		window.getContentPane().add(preDataGraph);
+		GraphBackground filteredPlot = new GraphBackground(filteredData,this.xMin, this.xMax,this.yMin,this.yMax,Color.blue);
+		if(lastFilter != null){
+			window.getContentPane().remove(lastFilter);
+		}
+		System.out.println("Filtering");
+		lastFilter = filteredPlot;
+		window.getContentPane().add(filteredPlot,0);
 		window.setVisible(true);
 	}
 	private double[] evaluateArchitecture(Orbit [] orbits, ArrayList<TuioDemoObject> objectList) {
@@ -566,6 +644,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 
 		ArrayList<TuioDemoObject> markers;
 		String name;
+
 		
 		public Orbit (String name, ArrayList<TuioDemoObject> markers){
 			this.name = name;
@@ -601,7 +680,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		public long toBinaryOneHot() {
 			long oneHotRepr = 0;
 			for(TuioDemoObject e : markers){
-				oneHotRepr |= e.mod_id; 
+				oneHotRepr |= 1<<(numInstruments-(e.mod_id+1)); 
 			}
 			return oneHotRepr;
 		}

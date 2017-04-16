@@ -81,8 +81,8 @@ public class HistoryWindow extends JComponent{
 			if(orbit != null){
 				for (TuioDemoObject marker: orbit.markers){
 					if(marker!=null){
-						Insets insets = frame.getInsets();
-						marker.paintColor((Graphics2D)g, width, height, Color.WHITE);
+						//Insets insets = frame.getInsets();
+						//marker.paintColor((Graphics2D)g, width, height, Color.WHITE);
 					}
 				}
 			}
