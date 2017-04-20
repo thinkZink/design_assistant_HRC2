@@ -1,3 +1,4 @@
+package DesignAssistant;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -13,13 +14,13 @@ public class HistoryWindow extends JComponent{
 	private ArrayList<TuioDemoObject> objects;
 	private int width;
 	private int height;
-	private TuioDemoComponent.Orbit[] selectedOrbits;
-	private TuioDemoComponent.Orbit[] currentOrbits;
+	private TableComponent.Orbit[] selectedOrbits;
+	private TableComponent.Orbit[] currentOrbits;
 	private int numOrbits;
 	JFrame frame;
 	private Color[] orbitColors = {Color.blue, Color.red};
 	private boolean initial;
-	public HistoryWindow(ArrayList<TuioDemoObject> objects, int width, int height, JFrame frame, TuioDemoComponent.Orbit[] selectedOrbits,TuioDemoComponent.Orbit[] currentOrbits ) {
+	public HistoryWindow(ArrayList<TuioDemoObject> objects, int width, int height, JFrame frame, TableComponent.Orbit[] selectedOrbits,TableComponent.Orbit[] currentOrbits ) {
 		this.objects = objects;
 		this.width = width;
 		this.height = height;
@@ -34,15 +35,15 @@ public class HistoryWindow extends JComponent{
 		this.width = width;
 		this.height = height;
 		this.frame = frame;
-		this.selectedOrbits = new TuioDemoComponent.Orbit[numOrbits];
-		this.currentOrbits = new TuioDemoComponent.Orbit[numOrbits];
+		this.selectedOrbits = new TableComponent.Orbit[numOrbits];
+		this.currentOrbits = new TableComponent.Orbit[numOrbits];
 		this.numOrbits = numOrbits;
 		this.initial = false;
 	}
-	public void setCurrentOrbits(TuioDemoComponent.Orbit[] orbits){
+	public void setCurrentOrbits(TableComponent.Orbit[] orbits){
 		this.currentOrbits = orbits;
 	}
-	public void setSelectedOrbits(TuioDemoComponent.Orbit[] orbits, ArrayList<TuioDemoObject> objects){
+	public void setSelectedOrbits(TableComponent.Orbit[] orbits, ArrayList<TuioDemoObject> objects){
 		this.objects = objects;
 		this.selectedOrbits = orbits;
 	}
@@ -77,7 +78,7 @@ public class HistoryWindow extends JComponent{
 		*/
 		//System.out.println("Painting History Window");
 		
-		for (TuioDemoComponent.Orbit orbit : this.currentOrbits){
+		for (TableComponent.Orbit orbit : this.currentOrbits){
 			if(orbit != null){
 				for (TuioDemoObject marker: orbit.markers){
 					if(marker!=null){
@@ -96,7 +97,7 @@ public class HistoryWindow extends JComponent{
 //					tobj.paintColor((Graphics2D)g, width,height,Color.BLUE);
 //				}
 //			}
-			for (TuioDemoComponent.Orbit orbit : this.selectedOrbits){
+			for (TableComponent.Orbit orbit : this.selectedOrbits){
 				for (TuioDemoObject marker: orbit.markers){
 					if(marker!=null){
 						Insets insets = frame.getInsets();

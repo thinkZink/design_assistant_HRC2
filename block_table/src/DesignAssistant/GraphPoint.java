@@ -1,3 +1,4 @@
+package DesignAssistant;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,11 +25,11 @@ class GraphPoint extends JComponent {
 	int xMax;
 	int yMax;
 	int yMin;
-	TuioDemoComponent.Orbit [] configuration;
+	TableComponent.Orbit [] configuration;
 	ArrayList<TuioDemoObject> objectList;
 	
 
-	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TuioDemoComponent.Orbit[] orbits,int index, ArrayList<TuioDemoObject> objectList) {
+	public GraphPoint(double x, double y, int xMin, int xMax, int yMin, int yMax,TableComponent.Orbit[] orbits,int index, ArrayList<TuioDemoObject> objectList) {
 	//xPrev and yPrev are static. will this work?
 	
 		this.dim1 = x;
@@ -62,7 +63,7 @@ class GraphPoint extends JComponent {
 		//System.out.println("index:" + index + "pc:"+ TuioDemoComponent.pointCounter);
 		//circle the last selected point in blue
 		try{
-			if(this.index == TuioDemoComponent.currentSelectedPoint.index){
+			if(this.index == TableComponent.currentSelectedPoint.index){
 				g.setColor(Color.BLUE);
 				g.fillOval(xPlot-2, yPlot-2, size+4,size+4);
 				g.setColor(Color.getHSBColor(0.0f, 1.0f, 1.0f));
@@ -73,7 +74,7 @@ class GraphPoint extends JComponent {
 			//do nothing
 		}
 		//circle the current point in black
-		int recencyIndex = TuioDemoComponent.pointCounter-index;
+		int recencyIndex = TableComponent.pointCounter-index;
 		//if this is one of the last two points:
 		
 		switch (recencyIndex){
@@ -89,7 +90,7 @@ class GraphPoint extends JComponent {
 		default: 
 			
 			//g.setColor(Color.getHSBColor(1.0f,(float)index/TuioDemoComponent.pointCounter, (float)index/TuioDemoComponent.pointCounter));
-			g.setColor(Color.getHSBColor(0.75f,(float)index/TuioDemoComponent.pointCounter, 1.0f));
+			g.setColor(Color.getHSBColor(0.75f,(float)index/TableComponent.pointCounter, 1.0f));
 		}
 
 		g.fillOval(xPlot, yPlot, size,size);	  

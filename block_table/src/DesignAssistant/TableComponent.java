@@ -1,3 +1,4 @@
+package DesignAssistant;
 /*
  TUIO Java GUI Demo
  Copyright (c) 2005-2014 Martin Kaltenbrunner <martin@tuio.org>
@@ -44,7 +45,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-public class TuioDemoComponent extends JComponent implements TuioListener {
+public class TableComponent extends JComponent implements TuioListener {
 
 	private Hashtable<Long,TuioDemoObject> objectList = new Hashtable<Long,TuioDemoObject>();
 	private Hashtable<Long,TuioCursor> cursorList = new Hashtable<Long,TuioCursor>();
@@ -96,7 +97,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
 	private GraphBackground lastFilter = null;
 	
-	public TuioDemoComponent(JFrame frame) {
+	public TableComponent(JFrame frame) {
 
 		super();
 		preDataFile = null;
@@ -177,7 +178,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    
 		
 	}
-	public TuioDemoComponent(String preDataPath,JFrame frame) {
+	public TableComponent(String preDataPath,JFrame tableFrame) {
 		super();
 		preDataFile = preDataPath;
 		//start by getting the screens
@@ -199,7 +200,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	    window.setVisible(true);
 	    plotInitialData(preDataPath);
 	   
-	    pc_window = frame;
+	    pc_window = tableFrame;
 	    
 	    if( gs.length > 1 )
 	    {
@@ -234,7 +235,7 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		super.setSize(w,h);
 		width = w;
 		height = h;
-		scale  = height/(float)TuioDemoComponent.table_size;	
+		scale  = height/(float)TableComponent.table_size;	
 	}
 	
 	public void addTuioObject(TuioObject tobj) {

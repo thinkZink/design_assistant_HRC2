@@ -1,3 +1,4 @@
+package DesignAssistant;
 /*
  TUIO Java GUI Demo
  Copyright (c) 2005-2014 Martin Kaltenbrunner <martin@tuio.org>
@@ -35,7 +36,7 @@ public class TuioDemoBlob extends TuioBlob {
 
 	public TuioDemoBlob(TuioBlob tblb) {
 		super(tblb);
-		int size = TuioDemoComponent.object_size;
+		int size = TableComponent.object_size;
 		square = new Rectangle2D.Float(-size/2,-size/2,size,size);
 		
 		AffineTransform transform = new AffineTransform();
@@ -48,7 +49,7 @@ public class TuioDemoBlob extends TuioBlob {
 	
 		float Xpos = xpos*width;
 		float Ypos = ypos*height;
-		float scale = height/(float)TuioDemoComponent.table_size;
+		float scale = height/(float)TableComponent.table_size;
 
 		AffineTransform trans = new AffineTransform();
 		trans.translate(-xpos,-ypos);

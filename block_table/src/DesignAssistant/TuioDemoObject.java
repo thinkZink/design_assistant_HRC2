@@ -1,3 +1,4 @@
+package DesignAssistant;
 /*
  TUIO Java GUI Demo
  Copyright (c) 2005-2014 Martin Kaltenbrunner <martin@tuio.org>
@@ -54,7 +55,7 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 		mod_id = symbol_id % 26;
 		//xpos = (int)(a*xpos+b*ypos+c);
 		//ypos = (int)(d*xpos+e*ypos+f);
-		int size = TuioDemoComponent.object_size;
+		int size = TableComponent.object_size;
 		square = new RoundRectangle2D.Float(-size/2,-size/2,size,size,size/5,size/5);
 		
 		AffineTransform transform = new AffineTransform();
@@ -73,7 +74,7 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 	
 		float Xpos = xpos*width;
 		float Ypos = height-ypos*height;
-		float scale = height/(float)TuioDemoComponent.table_size;
+		float scale = height/(float)TableComponent.table_size;
 		AffineTransform trans = new AffineTransform();
 		trans.translate(-xpos,-ypos);
 		trans.translate(Xpos,Ypos);
@@ -96,7 +97,7 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 		float ytpos = getYtPos();
 		float Xpos = xtpos*width;
 		float Ypos = height-(ytpos*height);
-		float scale = height/(float)TuioDemoComponent.table_size;
+		float scale = height/(float)TableComponent.table_size;
 		//System.out.println("p:("+xpos+","+ypos+"),tp:("+xtpos+","+ytpos+"),P("+Xpos+","+Ypos+")");
 		AffineTransform trans = new AffineTransform();
 		trans.translate(-xtpos,-ytpos);

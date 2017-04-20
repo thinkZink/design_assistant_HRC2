@@ -1,3 +1,4 @@
+package DesignAssistant;
 /* Main class for Design Assistant.
  
  Adapted TUIO Java GUI
@@ -31,55 +32,55 @@ import java.util.*;
 import javax.swing.*;
 import TUIO.*;
 
-public class TuioDesAs  {
+public class DesignAssistant  {
 
 	private final int window_width  = 480;
 	private final int window_height = 480;
 
 	private boolean fullscreen = true;
 	
-	private TuioDemoComponent demo;
-	private JFrame frame;
-	private GraphicsDevice device;
+	private TableComponent tableComponent;
+	private JFrame tableFrame;
+	private GraphicsDevice tableDevice;
 	private Cursor invisibleCursor;
 	
-	public TuioDesAs() {
+	public DesignAssistant() {
 		String preDataPath = "/Users/Nikhil/Desktop/git_repo/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		preDataPath = "/Users/designassistant/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
 		//preDataPath = "/Users/mvl24/Documents/workspace/design_assistant_HRC2/block_table/src/data/EOSS_data.csv";
-		frame = new JFrame();
-		demo = new TuioDemoComponent(preDataPath,frame);
+		tableFrame = new JFrame();
+		tableComponent = new TableComponent(preDataPath,tableFrame);
 		//demo = new TuioDemoComponent(frame);
-		demo.init();
+		tableComponent.init();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
-		device = gs[0];//GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		tableDevice = gs[0];//GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		invisibleCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "invisible cursor");
-		frame.add(demo);
-		frame.setVisible(true);
-		frame.repaint();
+		tableFrame.add(tableComponent);
+		tableFrame.setVisible(true);
+		tableFrame.repaint();
 		//setupWindow();
 		//showWindow();
 	}
 	
 	public TuioListener getTuioListener() {
-		return demo;
+		return tableComponent;
 	}
 	
 	public void setupWindow() {
 	
 		
-		frame.add(demo);
+		tableFrame.add(tableComponent);
 
 		//frame.setTitle("Current Configuration");
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
-	    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.addWindowListener( new WindowAdapter() { public void windowClosing(WindowEvent evt) {
+		tableFrame.setResizable(false);
+		tableFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
+	    tableFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		tableFrame.addWindowListener( new WindowAdapter() { public void windowClosing(WindowEvent evt) {
 				System.exit(0);
 			} });
 		
-		frame.addKeyListener( new KeyAdapter() { public void keyPressed(KeyEvent evt) {
+		tableFrame.addKeyListener( new KeyAdapter() { public void keyPressed(KeyEvent evt) {
 			if (evt.getKeyCode()==KeyEvent.VK_ESCAPE) System.exit(0);
 			else if (evt.getKeyCode()==KeyEvent.VK_F1) {
 				destroyWindow();
@@ -87,17 +88,17 @@ public class TuioDesAs  {
 				fullscreen = !fullscreen;
 				showWindow();
 			}
-			else if (evt.getKeyCode()==KeyEvent.VK_V) demo.verbose=!demo.verbose;
+			else if (evt.getKeyCode()==KeyEvent.VK_V) tableComponent.verbose=!tableComponent.verbose;
 		} });
 	}
 	
 	public void destroyWindow() {
 	
-		frame.setVisible(false);
+		tableFrame.setVisible(false);
 		if (fullscreen) {
-			device.setFullScreenWindow(null);		
+			tableDevice.setFullScreenWindow(null);		
 		}
-		frame = null;
+		tableFrame = null;
 	}
 	
 	public void showWindow() {
@@ -105,12 +106,12 @@ public class TuioDesAs  {
 		if (fullscreen) {
 			int width  = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 			int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-			demo.setSize(width,height);
+			tableComponent.setSize(width,height);
 
-			frame.setSize(width,height);
-			frame.setUndecorated(true);
-			device.setFullScreenWindow(frame);
-			frame.setCursor(invisibleCursor);
+			tableFrame.setSize(width,height);
+			tableFrame.setUndecorated(true);
+			tableDevice.setFullScreenWindow(tableFrame);
+			tableFrame.setCursor(invisibleCursor);
 		} else {
 //			int width  = window_width;
 //			int height = window_height;
@@ -122,14 +123,14 @@ public class TuioDesAs  {
 //			frame.setCursor(Cursor.getDefaultCursor());
 		}
 		
-		frame.setVisible(true);
-		frame.repaint();
-		System.out.println("cost: " + demo.cost + "   " + "y: " + demo.science);
+		tableFrame.setVisible(true);
+		tableFrame.repaint();
+		System.out.println("cost: " + tableComponent.cost + "   " + "y: " + tableComponent.science);
 	}
 	
 	public static void main(String argv[]) {
 		
-		TuioDesAs design_assistant = new TuioDesAs();
+		DesignAssistant design_assistant = new DesignAssistant();
 		TuioClient client = null;
 		
 		

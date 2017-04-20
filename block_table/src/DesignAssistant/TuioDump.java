@@ -1,3 +1,4 @@
+package DesignAssistant;
 /*
  TUIO Java Console Example
  Copyright (c) 2005-2014 Martin Kaltenbrunner <martin@tuio.org>

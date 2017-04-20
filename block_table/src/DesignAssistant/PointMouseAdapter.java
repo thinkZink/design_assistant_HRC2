@@ -1,3 +1,4 @@
+package DesignAssistant;
 import java.awt.Component;
 import java.awt.event.*;
 import java.util.HashMap;
@@ -8,8 +9,8 @@ import javax.swing.SwingUtilities;
 import rbsa.eoss.Orbit;
 
 public class PointMouseAdapter extends MouseAdapter {
-	TuioDemoComponent demoComponent;
-	public PointMouseAdapter(TuioDemoComponent demoComponent){
+	TableComponent demoComponent;
+	public PointMouseAdapter(TableComponent demoComponent){
 		this.demoComponent = demoComponent;
 	}
 	
@@ -21,9 +22,9 @@ public class PointMouseAdapter extends MouseAdapter {
 			int y = e.getY();
 			String key = String.format("%d%d", x,y);
 			//HashMap<String,GraphPoint> pmap = TuioDemoComponent.pixelMap;
-			GraphPoint gp = TuioDemoComponent.pixelMap.get(key);
+			GraphPoint gp = TableComponent.pixelMap.get(key);
 			if(gp != null){
-				TuioDemoComponent.currentSelectedPoint = gp;
+				TableComponent.currentSelectedPoint = gp;
 	
 	//			TuioDemoComponent.Orbit [] configuration = gp.configuration;
 	//			for (TuioDemoComponent.Orbit o : configuration) {
