@@ -27,7 +27,7 @@ class GraphCoordinates extends JComponent {
 		this.yTickWidth = (int)((this.yMax-this.yMin)/this.numTicks); 
 	}
 	public void paint(Graphics g) {
-		String mode = TuioDemoComponent.filteringMode ? "Filtering" : "Exploration";
+		String mode = TuioDemoComponent.isExplorationMode() ? "Exploration":"Filtering";
 		
 		System.out.println("Painting Coordinates");
 		g.setColor(Color.black);

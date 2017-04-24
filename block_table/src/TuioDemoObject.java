@@ -41,12 +41,20 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 	 * 			|x2 y2 1|*|b|=|x2'| and the same for d,e,f and y1',y2',y3'
 	 * 			|x3 y3 1| |c|=|x3'|  
 	 */
-	private final double a = 3.18644068e3;
-	private final double b = -3.48542878e-14;
-	private final double c = -2.03050847e2;
-	private final double d = 4.40677966e1;
-	private final double e = -2.6e3;
-	private final double f = 2.09691525e2;
+	
+	private final double A = 1.398950768; 
+	private final double B = -7.718288101e-2;
+	private final double C = 2.060058086e-1;
+	private final double D = -1.524867568e-1;
+	private final double E = 2.777299649e-2;
+	private final double F = -4.160476243e-2;
+	
+	private final double G = -4.333079092e-2; 
+	private final double H = -5.437062104e-1;
+	private final double I = -1.939513704e-1;
+	private final double J = -1.868984906e-2;
+	private final double K = 1.85563729;
+	private final double L = 1.444873739e-1;
 	
 	public int mod_id;
 	public TuioDemoObject(TuioObject tobj) {
@@ -108,11 +116,31 @@ public class TuioDemoObject extends TuioObject implements Cloneable{
 		g.setPaint(Color.white);
 		g.drawString(toTuioLetter()+"",Xpos-10,Ypos);
 	}
+	
+	
+	
+	PathIterator getPathItr(int width,int height){
+		float Xpos = xpos*width;
+		float Ypos = height-ypos*height;
+		float scale = height/(float)TuioDemoComponent.table_size;
+		AffineTransform trans = new AffineTransform();
+		trans.translate(-xpos,-ypos);
+		trans.translate(Xpos,Ypos);
+		trans.scale(scale,scale);
+		Shape s = trans.createTransformedShape(square);
+		return s.getPathIterator(null, 1);
+	}
 	public float getXtPos(){
-		return xpos*(1f/.65f)-(.08f*1f/.65f);
+		//return xpos*(1f/.65f)-(.08f*1f/.65f);
+		//return (float)(A*xpos + B*ypos + C*xpos*ypos + D*xpos*xpos + E*ypos*ypos + F);
+		//return 1.40228f*xpos+0.0439f*ypos-.084426f;
+		return xpos;
 	}
 	public float getYtPos(){
-		return ypos*1f/.48f-.39f*1f/.48f;
+		//return ypos*1f/.48f-.39f*1f/.48f;
+		//return (float)(G*xpos + H*ypos + I*xpos*ypos + J*xpos*xpos + K*ypos*ypos + L);
+		//return -0.1681f*xpos + 1.676f*ypos-.48326f;
+		return ypos;
 	}
 	public void update(TuioObject tobj) {
 		

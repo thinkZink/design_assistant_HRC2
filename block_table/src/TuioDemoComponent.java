@@ -95,6 +95,9 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	public static GraphPoint currentSelectedPoint = null;
 	public static HashMap<String,GraphPoint> pixelMap = new HashMap<String,GraphPoint>();
 	private GraphBackground lastFilter = null;
+	private final double clusterWidthThreshold = 0.15; 
+	private final double orbitClusterBoundary = 0.9;
+	private static boolean explorationMode = false;
 	
 	public TuioDemoComponent(JFrame frame) {
 
@@ -374,48 +377,103 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 
 		// draw the objects and print orbits
 		Enumeration<TuioDemoObject> objects = objectList.elements();
-		ArrayList<TuioDemoObject> objectList = new ArrayList<TuioDemoObject>();
+		ArrayList<TuioDemoObject> objectsDetected = new ArrayList<TuioDemoObject>();
 		ArrayList<TuioDemoObject> [] markers = new ArrayList[this.numOrbits];
 		for (int i=0; i<markers.length; i++) {
 			markers[i] = new ArrayList<TuioDemoObject>(); 
 		}
 		
-		
+		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 		Orbit [] orbits = new Orbit[this.numOrbits];
 		TuioDemoObject tobj = null;
+		long emptyOrbitMask = 0L;
+		setExplorationMode(false);
 		while (objects.hasMoreElements()) {
 			tobj = objects.nextElement();
-			if (tobj!=null) { 
-				objectList.add(tobj);
-		//		tobj.paint(g2, width,height);
-				
-				/*Sorting objects into orbits*/
-				//TuioPoint obj_point = tobj.getPosition();
-				//float obj_x = obj_point.getX();
-				float obj_y = tobj.getYtPos();
-				//System.out.println("("+obj_x+","+obj_y+")");
-				if (obj_y < 0.2) //96
-					markers[4].add(tobj);
-				
-				else if (obj_y < 0.400) //192
-					markers[3].add(tobj);
-				
-				else if (obj_y < 0.601) //288
-					markers[2].add(tobj);
-				
-				else if (obj_y < 0.79977) //384
-					markers[1].add(tobj);
-				
-				else 
-					markers[0].add(tobj);
+			if (tobj!=null) {
+				if(tobj.mod_id==13){
+					//exploration mode enable, don't add it to the object list
+					setExplorationMode(true);
+				}
+				else{
+					
+					objectsDetected.add(tobj);
+					
+			//		tobj.paint(g2, width,height);
+					
+					/*Sorting objects into orbits*/
+					//TuioPoint obj_point = tobj.getPosition();
+					float obj_x = tobj.getXtPos();
+					float obj_y = tobj.getYtPos();
+					System.out.println("("+obj_x+","+obj_y+")");
+					
+					if (obj_x > 0.7f){
+						//add it to the clusters
+						if(clusters.size()==0){
+							clusters.add(new Cluster(tobj,clusterWidthThreshold));
+						}
+						else{
+							boolean clustered = false;
+							Stack<Cluster> matched = new Stack<Cluster>(); //track which clusters match, to merge
+							for(Cluster c : clusters){
+								if(c.addtoCluster(tobj)){
+									clustered = true;
+									matched.push(c);
+								}
+							}
+							if(!clustered){
+								clusters.add(new Cluster(tobj, clusterWidthThreshold));
+							}
+							else{
+								Cluster primary = matched.pop(); 
+								while(!matched.isEmpty()){
+									Cluster toMerge = matched.pop();
+									primary.mergeCluster(toMerge);
+									clusters.remove(toMerge); //this is super expensive (have to find it, then remove it)
+								}
+							}
+						}
+					}
+					else{
+						int orbitIndex = 0;
+						if (obj_y < 0.2) //96
+							orbitIndex = 4;
+							//markers[4].add(tobj);
+						
+						else if (obj_y < 0.400) //192
+							orbitIndex = 3;
+							//markers[3].add(tobj);
+						
+						else if (obj_y < 0.601) //288
+							orbitIndex = 2;
+							//markers[2].add(tobj);
+						
+						else if (obj_y < 0.79977) //384
+							orbitIndex = 1;
+							//markers[1].add(tobj);
+						//otherwise, it stays 0
+						//else 
+						//	markers[0].add(tobj);
+						
+						if (tobj.mod_id == 12){
+							//it's an empty orbit marker
+							emptyOrbitMask |= (0b111111111111L<<(12*orbitIndex));
+						}
+						else{
+							markers[orbitIndex].add(tobj);
+						}
+					}
+				}
 			}
 		}
-					
+		System.out.println("Clusters: "+clusters.toString());			
 
 		for (int i=0; i<orbits.length; i++) {
 			orbits[i] = new Orbit("Orbit " + (i+1), markers[i]);
 		}
 		hw.setCurrentOrbits(orbits);
+		hw.setCurrentClusters(clusters);
+		hw.setEmptyMask(emptyOrbitMask);
 		if (tobj!=null||true) { //remove this if statement; always paint the point
 			//write the orbits and their contents
 //			g2.setColor(Color.RED);
@@ -464,14 +522,15 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 //				}
 				
 //			}
-			if((objectList.size()>0 && !Arrays.deepEquals(lastOrbits, orbits))||forceEval == true){
+	    plotFilter(orbits, clusters, emptyOrbitMask);
+			if((objectsDetected.size()>0 && !Arrays.deepEquals(lastOrbits, orbits))||forceEval == true){
 				//System.out.println(lastOrbits);
 				//System.out.println(orbits);
-				if (filteringMode){
-					plotFilter(orbits);
-				}
-				else{
-					evaluateArchitecture(orbits, objectList);
+				//if (filteringMode){
+				
+				//}
+				if(isExplorationMode()){
+					evaluateArchitecture(orbits, objectsDetected);
 				}
 
 			}
@@ -564,13 +623,17 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 		science = p.happiness;
 		cost = p.productivity;
 	}*/
-	private void plotFilter(Orbit [] orbits){
+	private void plotFilter(Orbit [] orbits, ArrayList<Cluster> clusters, long emptyOrbitMask){
 		long filterMatch = 0L;
+		ArrayList<Long> globalFilters = new ArrayList<Long>();
 		ArrayList<double[]> filteredData;
 		for(int i = 0; i<numOrbits; i++){
-			filterMatch |= (orbits[i].toBinaryOneHot())<<((numOrbits-(i+1))*numInstruments); //simplify this!
+			filterMatch |= (orbits[i].toBinaryOneHot())<<((numOrbits-(i+1))*numInstruments); //simplify this! shouldn't it be <<<? causes syntax error...
 		}
-		filteredData = filterer.getFilteredData(filterMatch);
+		for(Cluster c : clusters){
+			globalFilters.add(c.toBinaryOneHot());
+		}
+		filteredData = filterer.getFilteredData(filterMatch,globalFilters, emptyOrbitMask);
 		GraphBackground filteredPlot = new GraphBackground(filteredData,this.xMin, this.xMax,this.yMin,this.yMax,Color.blue);
 		if(lastFilter != null){
 			window.getContentPane().remove(lastFilter);
@@ -640,6 +703,70 @@ public class TuioDemoComponent extends JComponent implements TuioListener {
 	        
 	}
 
+	
+	public static boolean isExplorationMode() {
+		return explorationMode;
+	}
+	public void setExplorationMode(boolean explorationMode) {
+		this.explorationMode = explorationMode;
+	}
+
+
+	public static class Cluster {
+		Set<TuioDemoObject> markers;
+		double distanceThreshold;
+		
+		public Cluster(TuioDemoObject firstObject, double clusterWidthThreshold){
+			this.distanceThreshold = clusterWidthThreshold;
+			this.markers = new HashSet<TuioDemoObject>();
+			this.markers.add(firstObject);
+		}
+		
+		public long toBinaryOneHot() {
+			long oneHotRepr = 0;
+			for(TuioDemoObject e : markers){
+				oneHotRepr |= 1<<(numInstruments-(e.mod_id+1)); 
+			}
+			return oneHotRepr;
+		}
+		public void mergeCluster(Cluster newCluster){
+			this.markers.addAll(newCluster.markers);
+		}
+		public boolean addtoCluster(TuioDemoObject newObject){
+			//tries to add a new block to a cluster; if it is out of range, don't add and return false
+			for(TuioDemoObject m : markers){
+				if(calculateDistance(m,newObject)<=distanceThreshold){
+					this.markers.add(newObject);
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		private double calculateDistance(TuioDemoObject a, TuioDemoObject b){
+			return Math.sqrt(Math.pow(a.getXtPos()-b.getXtPos(),2)+Math.pow(a.getYtPos()-b.getYtPos(), 2));
+		}
+		
+		public Iterable<Point2D> getClusterHull(int width, int height){
+			
+			ArrayList<Point2D> points = new ArrayList<Point2D>();
+			for (TuioDemoObject marker : markers) {
+				PathIterator pi = marker.getPathItr(width,height);
+				//ArrayList<TuioPoint> path = marker.getPath();
+				double[] coords = new double[6];
+				for (PathIterator i = pi; !i.isDone();i.next()) {
+					    if (i.currentSegment(coords) != PathIterator.SEG_CLOSE) {
+								      points.add(new Point2D(coords[0], coords[1]));
+					    }
+				}
+				
+	        }
+	        GrahamScan graham = new GrahamScan(points.toArray(new Point2D[0]));
+	        return graham.hull();
+		}
+	}
+	
 	public static class Orbit {
 
 		ArrayList<TuioDemoObject> markers;
